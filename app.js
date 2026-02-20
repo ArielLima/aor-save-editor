@@ -90,29 +90,33 @@ function handleFile(file) {
   reader.readAsText(file);
 }
 
-function downloadSave() {
-  const json = JSON.stringify(saveData);
-  const blob = new Blob([json], { type: 'application/octet-stream' });
+function triggerDownload(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'MODIFIED_sav.dat';
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
+function downloadSave() {
+  // Download backup first, then the modified save
+  const backupBlob = new Blob([originalJson], { type: 'application/octet-stream' });
+  triggerDownload(backupBlob, 'backup_sav.dat');
+
+  // Small delay so the browser handles both downloads
+  setTimeout(() => {
+    const json = JSON.stringify(saveData);
+    const modBlob = new Blob([json], { type: 'application/octet-stream' });
+    triggerDownload(modBlob, 'sav.dat');
+  }, 500);
+}
+
 function downloadBackup() {
   const blob = new Blob([originalJson], { type: 'application/octet-stream' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'sav_backup.dat';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  triggerDownload(blob, 'backup_sav.dat');
 }
 
 function loadNewFile() {
