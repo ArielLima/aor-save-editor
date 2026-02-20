@@ -61,8 +61,23 @@
     </div>
     <div class="save-location-steps">
       <strong>Quick access:</strong> Press <kbd>Win</kbd>+<kbd>R</kbd>, paste the path above, and hit Enter.
-      Each subfolder is a character &mdash; open one, then go into <strong>SaveData</strong> and pick a save slot.
-      The file you want is <strong>sav.dat</strong>.
+    </div>
+    <div class="save-location-structure">
+      <div class="save-location-subtitle">Save folder structure</div>
+      <pre>Save/
+  YourCharacter/
+    SaveData/
+      <span class="hl">3  Boreas  1300/</span>    &larr; manual save slot
+        <span class="hl2">sav.dat</span>            &larr; this is the file you edit
+      <span class="hl">Auto Save1/</span>           &larr; auto save slot
+        <span class="hl2">sav.dat</span>
+      ...</pre>
+    </div>
+    <div class="save-location-steps">
+      Each folder inside <strong>SaveData</strong> is a save slot that shows up in the game's load screen.
+      Open the slot you want to modify, grab its <strong>sav.dat</strong>, edit it here, then put the
+      modified <strong>sav.dat</strong> back in that same folder. The game will load your changes
+      next time you load that slot.
     </div>
   </div>
 </div>

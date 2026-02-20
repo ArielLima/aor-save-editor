@@ -214,6 +214,41 @@ body {
   color: var(--text-primary);
 }
 
+.save-location-subtitle {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.save-location-structure {
+  margin: 0.8rem 0;
+}
+
+.save-location-structure pre {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.save-location-structure pre .hl {
+  color: var(--text-primary);
+}
+
+.save-location-structure pre .hl2 {
+  color: var(--accent-gold);
+  font-weight: 500;
+}
+
 /* === EDITOR LAYOUT === */
 #editor-screen { display: none; }
 
