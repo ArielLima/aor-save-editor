@@ -701,6 +701,18 @@ function markInput(input, oldVal, newVal) {
 }
 
 // =====================================================================
+// SAVE LOCATION
+// =====================================================================
+function copySavePath() {
+  const path = '%USERPROFILE%\\AppData\\LocalLow\\PersonaeGames\\Age of Reforging The Freelands\\Save';
+  navigator.clipboard.writeText(path).then(() => {
+    const btn = document.getElementById('copy-path-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy Path'; }, 2000);
+  }).catch(() => {});
+}
+
+// =====================================================================
 // DISCLAIMER
 // =====================================================================
 function acceptDisclaimer() {
