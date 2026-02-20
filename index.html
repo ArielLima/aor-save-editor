@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Age of Reforging — Save Editor</title>
+<meta name="description" content="Fan-made save file editor for Age of Reforging: The Freelands. Edit character stats, skills, attributes, and more. Not affiliated with PersonaeGames.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ==================== DISCLAIMER MODAL ==================== -->
+<div class="modal-overlay" id="disclaimer-modal">
+  <div class="modal">
+    <div class="modal-title">Disclaimer &amp; Terms of Use</div>
+    <div class="modal-body">
+      By using this tool you acknowledge and agree to the following:
+      <ul>
+        <li>This tool is provided <strong>"as is"</strong> with absolutely <strong>no warranty</strong> of any kind, express or implied.</li>
+        <li>You are <strong>solely responsible</strong> for any changes made to your save files and any consequences that result from those changes.</li>
+        <li>Editing save data can <strong>corrupt your save</strong>, break game progression, cause crashes, or produce other unintended behavior.</li>
+        <li>This tool is <strong>not affiliated with, endorsed by, or supported by</strong> PersonaeGames or the developers of Age of Reforging: The Freelands.</li>
+        <li>You should <strong>always back up your original save files</strong> before making any modifications. The author(s) of this tool are not responsible for lost save data.</li>
+        <li>Use of this tool may affect your gameplay experience. <strong>You use it entirely at your own risk.</strong></li>
+      </ul>
+      <div class="modal-warn">
+        &#9888; The modified file will be saved as <strong>MODIFIED_sav.dat</strong>. You must manually rename it to <strong>sav.dat</strong> and place it in your save folder to use it. This is intentional &mdash; it prevents accidental overwrites.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-gold" onclick="acceptDisclaimer()">I Understand &amp; Accept</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== UPLOAD SCREEN ==================== -->
+<div id="upload-screen" style="display:none;">
+  <div class="upload-title">Age of Reforging</div>
+  <div class="upload-subtitle">Save Editor</div>
+
+  <div class="drop-zone" id="drop-zone">
+    <div class="drop-zone-icon">&#9876;</div>
+    <div class="drop-zone-text">Drop your sav.dat file here</div>
+    <div class="drop-zone-hint">or click to browse</div>
+    <input type="file" id="file-input" accept=".dat,.json">
+  </div>
+
+  <div class="upload-warning">
+    &#9888; Always back up your save files before editing. Modified saves are exported as
+    <strong>MODIFIED_sav.dat</strong> &mdash; you must rename the file yourself to apply changes.
+    No warranty is provided. You are solely responsible for any modifications.
+  </div>
+</div>
+
+<!-- ==================== EDITOR SCREEN ==================== -->
+<div id="editor-screen">
+  <div class="disclaimer-banner">
+    Fan-made tool &mdash; not affiliated with PersonaeGames. No warranty. Use at your own risk. Modified files save as MODIFIED_sav.dat.
+  </div>
+  <div class="editor-header">
+    <div class="editor-logo">&#9876; Age of Reforging &mdash; Save Editor</div>
+    <div class="editor-actions">
+      <button class="btn" onclick="loadNewFile()">Load File</button>
+      <button class="btn" onclick="downloadBackup()">Backup Original</button>
+      <button class="btn btn-gold" onclick="downloadSave()">&#9660; Download Save</button>
+    </div>
+  </div>
+
+  <div class="editor-body">
+    <div id="game-bar"></div>
+    <div class="party-section">
+      <div class="section-label">Party Members</div>
+      <div class="party-tabs" id="party-tabs"></div>
+    </div>
+    <div class="npc-browser">
+      <div class="npc-browser-bar">
+        <div class="section-label" style="margin-bottom:0">All Characters</div>
+        <input type="text" class="npc-search" id="npc-search" placeholder="Search by name or ID...">
+        <div class="npc-count" id="npc-count"></div>
+      </div>
+      <div class="npc-list" id="npc-list"></div>
+    </div>
+    <div id="char-editor"></div>
+  </div>
+
+  <div class="changes-bar" id="changes-bar">
+    <div class="changes-count" id="changes-count"></div>
+    <div class="changes-actions">
+      <button class="btn btn-danger" onclick="resetChanges()">Reset All Changes</button>
+      <button class="btn btn-gold" onclick="downloadSave()">&#9660; Download Modified Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
