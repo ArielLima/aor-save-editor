@@ -1007,6 +1007,16 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 /* --- Trait chips --- */
+.trait-list-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.7rem 1.1rem;
+  flex: 1;
+  overflow-y: auto;
+  align-content: flex-start;
+}
+
 .trait-list {
   display: flex;
   flex-wrap: wrap;
@@ -1240,6 +1250,28 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .catalog-item:hover .catalog-add-btn {
   opacity: 1;
+}
+
+.catalog-item-owned {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.catalog-item-owned:hover {
+  background: transparent;
+}
+
+.catalog-item-owned .catalog-item-name {
+  color: var(--text-muted);
+}
+
+.catalog-owned-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--accent-gold-dim);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 /* --- Data credit in banner --- */

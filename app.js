@@ -396,6 +396,13 @@ function renderCharEditor() {
   `;
 
   document.getElementById('char-editor').innerHTML = html;
+
+  // Populate catalogs after DOM is ready
+  if (activeEditorTab === 'inventory') {
+    filterItemCatalog(idx);
+  } else if (activeEditorTab === 'powers') {
+    filterTraitCatalog(idx);
+  }
 }
 
 function renderTabContent(npc, idx) {
@@ -414,8 +421,7 @@ function renderTabContent(npc, idx) {
            + renderTalentsCard(npc, idx)
            + renderTraitsCard(npc, idx);
     case 'inventory':
-      return renderInventoryCard(npc, idx)
-           + renderCombatStatsCard(npc, idx);
+      return renderInventoryCard(npc, idx);
     default:
       return '';
   }
@@ -762,29 +768,76 @@ function renderTraitsCard(npc, idx) {
   traits.forEach((t, i) => {
     const name = traitName(t);
     const label = name ? `${escHtml(name)}` : `#${t}`;
-    const tooltip = name ? `title="${escHtml(name)} (ID: ${t})"` : `title="ID: ${t}"`;
+    const tooltip = name ? `title="ID: ${t}"` : `title="ID: ${t}"`;
     chips += `<span class="trait-chip" ${tooltip}>${label}<button class="btn-remove-inline" onclick="removeListItem(${idx}, 'traits', ${i})" title="Remove">&times;</button></span>`;
   });
 
-  const searchId = 'add-trait-search-' + idx;
   return `
-    <div class="stat-card">
-      <div class="stat-card-title">
-        Traits
-        <span class="card-count">${traits.length}</span>
-      </div>
-      <div class="trait-list">${chips || '<span style="color:var(--text-muted);font-size:0.85rem;">No traits</span>'}</div>
-      <div class="card-add-bar">
-        <div class="search-wrap">
-          <input class="stat-input search-input" type="text" placeholder="Search traits..." id="${searchId}" data-db="traits" autocomplete="off"
-            oninput="filterSearch('${searchId}', '${searchId}-dropdown', TRAIT_DB)"
-            onblur="clearSearchDropdown('${searchId}')">
-          <div class="search-dropdown" id="${searchId}-dropdown"></div>
+    <div class="inv-layout stat-card-wide">
+      <div class="inv-panel inv-panel-owned">
+        <div class="stat-card-title">
+          Traits
+          <span class="card-count">${traits.length}</span>
         </div>
-        <button class="btn btn-sm" onclick="addTraitFromSearch(${idx}, '${searchId}')">+ Add</button>
+        <div class="trait-list-panel">
+          ${chips || '<div class="inv-empty">No traits</div>'}
+        </div>
+      </div>
+      <div class="inv-panel inv-panel-catalog">
+        <div class="stat-card-title">Available Traits</div>
+        <div class="inv-catalog-search">
+          <input class="stat-input search-input" type="text" placeholder="Search traits..." id="trait-catalog-search-${idx}"
+            oninput="filterTraitCatalog(${idx})" autocomplete="off">
+        </div>
+        <div class="inv-catalog-list" id="trait-catalog-list-${idx}"></div>
       </div>
     </div>
   `;
+}
+
+function filterTraitCatalog(npcIdx) {
+  const input = document.getElementById('trait-catalog-search-' + npcIdx);
+  const list = document.getElementById('trait-catalog-list-' + npcIdx);
+  if (!list) return;
+  const query = input ? input.value.toLowerCase().trim() : '';
+  const npc = findNpc(selectedCharId);
+  const ownedSet = new Set((npc && npc.traits) ? npc.traits : []);
+  const results = [];
+  for (const [id, entry] of Object.entries(TRAIT_DB)) {
+    if (!query || entry.en.toLowerCase().includes(query) || id === query) {
+      results.push({ id: Number(id), name: entry.en, owned: ownedSet.has(Number(id)) });
+    }
+  }
+  if (results.length === 0) {
+    list.innerHTML = '<div class="inv-empty">No traits match "' + escHtml(query) + '"</div>';
+    return;
+  }
+  list.innerHTML = results.map(r =>
+    `<div class="catalog-item${r.owned ? ' catalog-item-owned' : ''}" onclick="${r.owned ? '' : 'addTraitDirect(' + npcIdx + ',' + r.id + ')'}">
+      <span class="catalog-item-name">${escHtml(r.name)}</span>
+      <span class="catalog-item-id">#${r.id}</span>
+      ${r.owned
+        ? '<span class="catalog-owned-badge">Owned</span>'
+        : '<button class="btn btn-sm catalog-add-btn">+ Add</button>'}
+    </div>`
+  ).join('');
+}
+
+function addTraitDirect(npcIdx, traitId) {
+  const npc = saveData.npcs[npcIdx];
+  if (!npc.traits) npc.traits = [];
+  npc.traits.push(traitId);
+  changeCount++;
+  trackedOriginals[`npc.${npc.id}.traits.add.${traitId}`] = null;
+  updateChangesBar();
+  const searchInput = document.getElementById('trait-catalog-search-' + npcIdx);
+  const query = searchInput ? searchInput.value : '';
+  renderCharEditor();
+  const newInput = document.getElementById('trait-catalog-search-' + npcIdx);
+  if (newInput && query) {
+    newInput.value = query;
+    filterTraitCatalog(npcIdx);
+  }
 }
 
 function renderInventoryCard(npc, idx) {
@@ -855,9 +908,7 @@ function renderInventoryCard(npc, idx) {
           <input class="stat-input search-input" type="text" placeholder="Search items by name..." id="inv-catalog-search-${idx}"
             oninput="filterItemCatalog(${idx})" autocomplete="off">
         </div>
-        <div class="inv-catalog-list" id="inv-catalog-list-${idx}">
-          <div class="inv-empty">Type to search ${Object.keys(ITEM_DB).length} items</div>
-        </div>
+        <div class="inv-catalog-list" id="inv-catalog-list-${idx}"></div>
       </div>
     </div>
   `;
@@ -866,18 +917,13 @@ function renderInventoryCard(npc, idx) {
 function filterItemCatalog(npcIdx) {
   const input = document.getElementById('inv-catalog-search-' + npcIdx);
   const list = document.getElementById('inv-catalog-list-' + npcIdx);
-  if (!input || !list) return;
-  const query = input.value.toLowerCase().trim();
-  if (!query) {
-    list.innerHTML = '<div class="inv-empty">Type to search ' + Object.keys(ITEM_DB).length + ' items</div>';
-    return;
-  }
+  if (!list) return;
+  const query = input ? input.value.toLowerCase().trim() : '';
   const results = [];
   for (const [id, entry] of Object.entries(ITEM_DB)) {
-    if (entry.en.toLowerCase().includes(query) || id === query) {
+    if (!query || entry.en.toLowerCase().includes(query) || id === query) {
       results.push({ id: Number(id), name: entry.en });
     }
-    if (results.length >= 50) break;
   }
   if (results.length === 0) {
     list.innerHTML = '<div class="inv-empty">No items match "' + escHtml(query) + '"</div>';
