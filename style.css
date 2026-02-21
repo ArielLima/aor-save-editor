@@ -716,6 +716,39 @@ body::after {
 .char-meta { font-size: 0.95rem; color: var(--text-muted); }
 .char-meta span { margin-right: 0.8rem; }
 
+/* === Editor Tab Bar === */
+.editor-tab-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.editor-tab {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.65rem 1.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editor-tab:hover {
+  color: var(--text-secondary);
+  background: rgba(201,168,76,0.03);
+}
+
+.editor-tab.active {
+  color: var(--accent-gold);
+  border-bottom-color: var(--accent-gold);
+}
+
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
@@ -928,16 +961,110 @@ input[type="number"]::-webkit-inner-spin-button {
 /* --- Item name in inventory --- */
 .item-name {
   font-family: var(--font-display);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-secondary);
-  display: block;
   letter-spacing: 0.02em;
+}
+.item-name-unknown {
+  color: var(--text-muted);
+  font-style: italic;
 }
 .item-id {
   font-family: var(--font-mono);
   font-size: 0.68rem;
   color: var(--text-muted);
+}
+
+/* === Inventory List === */
+.stat-card-wide {
+  grid-column: 1 / -1;
+}
+
+.inv-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.inv-item {
+  padding: 0.6rem 1.1rem;
+  border-bottom: 1px solid rgba(42,36,24,0.5);
+  transition: background 0.15s ease;
+}
+
+.inv-item:hover {
+  background: rgba(201,168,76,0.025);
+}
+
+.inv-item:last-child {
+  border-bottom: none;
+}
+
+.inv-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+}
+
+.inv-item-name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.inv-item-fields {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.inv-field {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.inv-field-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.inv-field-value {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.inv-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.item-attrs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+}
+
+.item-attr-chip {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.15rem 0.45rem;
+  background: rgba(201,168,76,0.06);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-secondary);
 }
 
 /* --- Data credit in banner --- */
@@ -1048,4 +1175,6 @@ input[type="number"]::-webkit-inner-spin-button {
   .char-header { flex-direction: column; gap: 0.3rem; }
   .editor-header { flex-direction: column; gap: 0.4rem; padding: 0.5rem 0.8rem; }
   .changes-bar { flex-direction: column; gap: 0.5rem; padding: 0.8rem; }
+  .editor-tab { flex: 1; text-align: center; padding: 0.5rem 0.5rem; font-size: 0.68rem; }
+  .inv-item-fields { gap: 0.7rem; }
 }

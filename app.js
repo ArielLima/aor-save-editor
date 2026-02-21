@@ -6,6 +6,7 @@ let originalJson = '';
 let selectedCharId = null;
 let changeCount = 0;
 let trackedOriginals = {};
+let activeEditorTab = 'overview';
 
 // Data dictionaries (loaded from KKAoRMod data files)
 let ITEM_DB = {};
@@ -65,6 +66,13 @@ const CAREERS = {
 
 const GENDERS = { 1: 'Male', 2: 'Female' };
 const RACES = { 1: 'Human', 2: 'Elf', 3: 'Dwarf', 11: 'Animal' };
+
+const EDITOR_TABS = [
+  { id: 'overview',   label: 'Overview' },
+  { id: 'abilities',  label: 'Abilities' },
+  { id: 'powers',     label: 'Powers' },
+  { id: 'inventory',  label: 'Inventory' },
+];
 
 // =====================================================================
 // FILE HANDLING
@@ -303,6 +311,13 @@ function renderCharEditor() {
   const idx = findNpcIndex(selectedCharId);
   const isParty = getPartyIds().includes(npc.id);
 
+  let tabBar = '<div class="editor-tab-bar">';
+  EDITOR_TABS.forEach(tab => {
+    const active = tab.id === activeEditorTab ? ' active' : '';
+    tabBar += `<button class="editor-tab${active}" onclick="switchEditorTab('${tab.id}')">${tab.label}</button>`;
+  });
+  tabBar += '</div>';
+
   let html = `
     <div class="char-header">
       <div class="char-name">${escHtml(npc.unitname)}</div>
@@ -316,23 +331,41 @@ function renderCharEditor() {
           : '<button class="btn btn-gold btn-sm" onclick="addToParty(' + npc.id + ')">+ Add to Party</button>'}
       </div>
     </div>
+    ${tabBar}
     <div class="stat-grid">
-      ${renderIdentityCard(npc, idx)}
-      ${renderAttributesCard(npc, idx)}
-      ${renderStatusCard(npc, idx)}
-      ${renderResourcesCard(npc, idx)}
-      ${renderSkillsCard(npc, idx)}
-      ${renderWeaponMasteryCard(npc, idx)}
-      ${renderSpellsCard(npc, idx)}
-      ${renderTalentsCard(npc, idx)}
-      ${renderTraitsCard(npc, idx)}
-      ${renderInventoryCard(npc, idx)}
-      ${renderAlignmentCard(npc, idx)}
-      ${renderCombatStatsCard(npc, idx)}
+      ${renderTabContent(npc, idx)}
     </div>
   `;
 
   document.getElementById('char-editor').innerHTML = html;
+}
+
+function renderTabContent(npc, idx) {
+  switch (activeEditorTab) {
+    case 'overview':
+      return renderIdentityCard(npc, idx)
+           + renderStatusCard(npc, idx)
+           + renderResourcesCard(npc, idx)
+           + renderAlignmentCard(npc, idx);
+    case 'abilities':
+      return renderAttributesCard(npc, idx)
+           + renderSkillsCard(npc, idx)
+           + renderWeaponMasteryCard(npc, idx);
+    case 'powers':
+      return renderSpellsCard(npc, idx)
+           + renderTalentsCard(npc, idx)
+           + renderTraitsCard(npc, idx);
+    case 'inventory':
+      return renderInventoryCard(npc, idx)
+           + renderCombatStatsCard(npc, idx);
+    default:
+      return '';
+  }
+}
+
+function switchEditorTab(tabId) {
+  activeEditorTab = tabId;
+  renderCharEditor();
 }
 
 function renderIdentityCard(npc, idx) {
@@ -692,46 +725,63 @@ function renderTraitsCard(npc, idx) {
 
 function renderInventoryCard(npc, idx) {
   const items = npc.items || [];
-  let rows = `
-    <tr class="stat-header-row">
-      <td>Item</td>
-      <td>Qty</td>
-      <td>Quality</td>
-      <td>Dur.</td>
-      <td></td>
-    </tr>
-  `;
 
+  let itemList = '';
   items.forEach((item, i) => {
-    const dur = item.durability === -1 ? 'Consumable' : Number(item.durability).toFixed(1);
     const name = itemName(item.id);
-    const label = name ? `<span class="item-name">${escHtml(name)}</span><span class="item-id">#${item.id}</span>` : `<span class="item-id">#${item.id}</span>`;
-    rows += `
-      <tr>
-        <td class="stat-label">${label}</td>
-        <td class="stat-value">
-          <input class="stat-input" type="number" value="${item.stackNum}" style="width:50px;"
-            onchange="onItemField(${idx}, ${i}, 'stackNum', Number(this.value))">
-        </td>
-        <td class="stat-value">
-          <input class="stat-input" type="number" value="${item.quality}" style="width:50px;"
-            onchange="onItemField(${idx}, ${i}, 'quality', Number(this.value))">
-        </td>
-        <td class="stat-value"><span style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-muted);">${dur}</span></td>
-        <td class="stat-value">
+    const dur = item.durability === -1 ? 'Consumable' : Number(item.durability).toFixed(1);
+    const durLabel = item.durability === -1 ? 'Consumable' : 'Durability';
+
+    let addAttrHtml = '';
+    if (item.addAttrs && item.addAttrs.length > 0) {
+      const attrChips = item.addAttrs.map(a => {
+        const attrLabel = addonAttrName(a.id) || ('Attr #' + a.id);
+        return `<span class="item-attr-chip" title="ID: ${a.id}">${escHtml(attrLabel)}: ${a.value}</span>`;
+      }).join('');
+      addAttrHtml = `<div class="item-attrs">${attrChips}</div>`;
+    }
+
+    itemList += `
+      <div class="inv-item">
+        <div class="inv-item-header">
+          <div class="inv-item-name">
+            ${name
+              ? `<span class="item-name">${escHtml(name)}</span>`
+              : `<span class="item-name item-name-unknown">Unknown Item</span>`}
+            <span class="item-id">#${item.id}</span>
+          </div>
           <button class="btn-remove" onclick="removeListItem(${idx}, 'items', ${i})" title="Remove">&times;</button>
-        </td>
-      </tr>
+        </div>
+        <div class="inv-item-fields">
+          <label class="inv-field">
+            <span class="inv-field-label">Qty</span>
+            <input class="stat-input" type="number" value="${item.stackNum}" style="width:50px;"
+              onchange="onItemField(${idx}, ${i}, 'stackNum', Number(this.value))">
+          </label>
+          <label class="inv-field">
+            <span class="inv-field-label">Quality</span>
+            <input class="stat-input" type="number" value="${item.quality}" style="width:50px;"
+              onchange="onItemField(${idx}, ${i}, 'quality', Number(this.value))">
+          </label>
+          <label class="inv-field">
+            <span class="inv-field-label">${durLabel}</span>
+            <span class="inv-field-value">${dur}</span>
+          </label>
+        </div>
+        ${addAttrHtml}
+      </div>
     `;
   });
 
   return `
-    <div class="stat-card">
+    <div class="stat-card stat-card-wide">
       <div class="stat-card-title">
         Inventory
         <span class="card-count">${items.length}</span>
       </div>
-      <table class="stat-table">${rows}</table>
+      <div class="inv-list">
+        ${itemList || '<div class="inv-empty">No items</div>'}
+      </div>
       <div class="card-add-bar">
         <input class="stat-input" type="number" placeholder="ID" id="add-item-id-${idx}" style="width:60px;text-align:center;">
         <input class="stat-input" type="number" placeholder="Qty" id="add-item-qty-${idx}" style="width:50px;text-align:center;" value="1">
