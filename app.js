@@ -7,6 +7,11 @@ let selectedCharId = null;
 let changeCount = 0;
 let trackedOriginals = {};
 
+// Data dictionaries (loaded from KKAoRMod data files)
+let ITEM_DB = {};
+let TRAIT_DB = {};
+let ADDON_ATTR_DB = {};
+
 // =====================================================================
 // CONSTANTS
 // =====================================================================
@@ -191,6 +196,21 @@ function escHtml(str) {
   const d = document.createElement('div');
   d.textContent = str;
   return d.innerHTML;
+}
+
+function itemName(id) {
+  const entry = ITEM_DB[String(id)];
+  return entry ? entry.en : null;
+}
+
+function traitName(id) {
+  const entry = TRAIT_DB[String(id)];
+  return entry ? entry.en : null;
+}
+
+function addonAttrName(id) {
+  const entry = ADDON_ATTR_DB[String(id)];
+  return entry ? entry.en : null;
 }
 
 // =====================================================================
@@ -649,7 +669,10 @@ function renderTraitsCard(npc, idx) {
   const traits = npc.traits || [];
   let chips = '';
   traits.forEach((t, i) => {
-    chips += `<span class="trait-chip">#${t}<button class="btn-remove-inline" onclick="removeListItem(${idx}, 'traits', ${i})" title="Remove">&times;</button></span>`;
+    const name = traitName(t);
+    const label = name ? `${escHtml(name)}` : `#${t}`;
+    const tooltip = name ? `title="${escHtml(name)} (ID: ${t})"` : `title="ID: ${t}"`;
+    chips += `<span class="trait-chip" ${tooltip}>${label}<button class="btn-remove-inline" onclick="removeListItem(${idx}, 'traits', ${i})" title="Remove">&times;</button></span>`;
   });
 
   return `
@@ -671,19 +694,21 @@ function renderInventoryCard(npc, idx) {
   const items = npc.items || [];
   let rows = `
     <tr class="stat-header-row">
-      <td>Item ID</td>
+      <td>Item</td>
       <td>Qty</td>
       <td>Quality</td>
-      <td>Durability</td>
+      <td>Dur.</td>
       <td></td>
     </tr>
   `;
 
   items.forEach((item, i) => {
     const dur = item.durability === -1 ? 'Consumable' : Number(item.durability).toFixed(1);
+    const name = itemName(item.id);
+    const label = name ? `<span class="item-name">${escHtml(name)}</span><span class="item-id">#${item.id}</span>` : `<span class="item-id">#${item.id}</span>`;
     rows += `
       <tr>
-        <td class="stat-label">#${item.id}</td>
+        <td class="stat-label">${label}</td>
         <td class="stat-value">
           <input class="stat-input" type="number" value="${item.stackNum}" style="width:50px;"
             onchange="onItemField(${idx}, ${i}, 'stackNum', Number(this.value))">
@@ -1025,6 +1050,11 @@ function acceptDisclaimer() {
 // INIT
 // =====================================================================
 (function init() {
+  // Load data dictionaries (non-blocking)
+  fetch('data/items.json').then(r => r.json()).then(d => { ITEM_DB = d; }).catch(() => {});
+  fetch('data/traits.json').then(r => r.json()).then(d => { TRAIT_DB = d; }).catch(() => {});
+  fetch('data/addon_attributes.json').then(r => r.json()).then(d => { ADDON_ATTR_DB = d; }).catch(() => {});
+
   // Check if disclaimer was already accepted this session
   try {
     if (sessionStorage.getItem('aor-disclaimer-accepted') === '1') {
