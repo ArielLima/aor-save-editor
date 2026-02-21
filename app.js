@@ -222,6 +222,64 @@ function addonAttrName(id) {
 }
 
 // =====================================================================
+// SEARCHABLE DROPDOWN
+// =====================================================================
+function filterSearch(inputId, dropdownId, db) {
+  const input = document.getElementById(inputId);
+  const dropdown = document.getElementById(dropdownId);
+  if (!input || !dropdown) return;
+  const query = input.value.toLowerCase().trim();
+  if (!query || query.length < 1) {
+    dropdown.innerHTML = '';
+    dropdown.classList.remove('visible');
+    return;
+  }
+  const results = [];
+  for (const [id, entry] of Object.entries(db)) {
+    if (entry.en.toLowerCase().includes(query) || id === query) {
+      results.push({ id: Number(id), name: entry.en });
+    }
+    if (results.length >= 12) break;
+  }
+  if (results.length === 0) {
+    dropdown.innerHTML = '<div class="search-no-results">No matches</div>';
+    dropdown.classList.add('visible');
+    return;
+  }
+  dropdown.innerHTML = results.map(r =>
+    `<div class="search-result" onmousedown="selectSearchResult('${inputId}', ${r.id})">${escHtml(r.name)} <span class="search-result-id">#${r.id}</span></div>`
+  ).join('');
+  dropdown.classList.add('visible');
+}
+
+function selectSearchResult(inputId, id) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  input.dataset.selectedId = id;
+  const db = input.dataset.db;
+  let name = '';
+  if (db === 'items') name = itemName(id);
+  else if (db === 'traits') name = traitName(id);
+  input.value = name || ('#' + id);
+  const dropdownId = inputId + '-dropdown';
+  const dropdown = document.getElementById(dropdownId);
+  if (dropdown) {
+    dropdown.classList.remove('visible');
+    dropdown.innerHTML = '';
+  }
+}
+
+function clearSearchDropdown(inputId) {
+  const dropdown = document.getElementById(inputId + '-dropdown');
+  if (dropdown) {
+    setTimeout(() => {
+      dropdown.classList.remove('visible');
+      dropdown.innerHTML = '';
+    }, 150);
+  }
+}
+
+// =====================================================================
 // RENDERING
 // =====================================================================
 function renderAll() {
@@ -708,6 +766,7 @@ function renderTraitsCard(npc, idx) {
     chips += `<span class="trait-chip" ${tooltip}>${label}<button class="btn-remove-inline" onclick="removeListItem(${idx}, 'traits', ${i})" title="Remove">&times;</button></span>`;
   });
 
+  const searchId = 'add-trait-search-' + idx;
   return `
     <div class="stat-card">
       <div class="stat-card-title">
@@ -716,8 +775,13 @@ function renderTraitsCard(npc, idx) {
       </div>
       <div class="trait-list">${chips || '<span style="color:var(--text-muted);font-size:0.85rem;">No traits</span>'}</div>
       <div class="card-add-bar">
-        <input class="stat-input" type="number" placeholder="ID" id="add-trait-id-${idx}" style="width:60px;text-align:center;">
-        <button class="btn btn-sm" onclick="addTrait(${idx})">+ Add Trait</button>
+        <div class="search-wrap">
+          <input class="stat-input search-input" type="text" placeholder="Search traits..." id="${searchId}" data-db="traits" autocomplete="off"
+            oninput="filterSearch('${searchId}', '${searchId}-dropdown', TRAIT_DB)"
+            onblur="clearSearchDropdown('${searchId}')">
+          <div class="search-dropdown" id="${searchId}-dropdown"></div>
+        </div>
+        <button class="btn btn-sm" onclick="addTraitFromSearch(${idx}, '${searchId}')">+ Add</button>
       </div>
     </div>
   `;
@@ -783,9 +847,14 @@ function renderInventoryCard(npc, idx) {
         ${itemList || '<div class="inv-empty">No items</div>'}
       </div>
       <div class="card-add-bar">
-        <input class="stat-input" type="number" placeholder="ID" id="add-item-id-${idx}" style="width:60px;text-align:center;">
+        <div class="search-wrap">
+          <input class="stat-input search-input" type="text" placeholder="Search items..." id="add-item-search-${idx}" data-db="items" autocomplete="off"
+            oninput="filterSearch('add-item-search-${idx}', 'add-item-search-${idx}-dropdown', ITEM_DB)"
+            onblur="clearSearchDropdown('add-item-search-${idx}')">
+          <div class="search-dropdown" id="add-item-search-${idx}-dropdown"></div>
+        </div>
         <input class="stat-input" type="number" placeholder="Qty" id="add-item-qty-${idx}" style="width:50px;text-align:center;" value="1">
-        <button class="btn btn-sm" onclick="addItem(${idx})">+ Add Item</button>
+        <button class="btn btn-sm" onclick="addItemFromSearch(${idx}, 'add-item-search-${idx}')">+ Add</button>
       </div>
     </div>
   `;
@@ -1014,6 +1083,49 @@ function addTrait(npcIdx) {
   npc.traits.push(id);
   changeCount++;
   trackedOriginals[`npc.${npc.id}.traits.add.${id}`] = null;
+  updateChangesBar();
+  renderCharEditor();
+}
+
+function addTraitFromSearch(npcIdx, inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const id = Number(input.dataset.selectedId);
+  if (isNaN(id) || id < 0) return;
+  const npc = saveData.npcs[npcIdx];
+  if (!npc.traits) npc.traits = [];
+  npc.traits.push(id);
+  changeCount++;
+  trackedOriginals[`npc.${npc.id}.traits.add.${id}`] = null;
+  updateChangesBar();
+  renderCharEditor();
+}
+
+function addItemFromSearch(npcIdx, inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const id = Number(input.dataset.selectedId);
+  const qtyInput = document.getElementById('add-item-qty-' + npcIdx);
+  const qty = qtyInput ? (Number(qtyInput.value) || 1) : 1;
+  if (isNaN(id) || id < 0) return;
+  const npc = saveData.npcs[npcIdx];
+  if (!npc.items) npc.items = [];
+  const usedSlots = new Set(npc.items.map(i => i.slotIndex));
+  let slot = 0;
+  while (usedSlots.has(slot)) slot++;
+  npc.items.push({
+    id: id,
+    slotIndex: slot,
+    subSlotIndex: 0,
+    stackNum: qty,
+    isNew: true,
+    isStolen: 0,
+    durability: -1,
+    quality: 1,
+    addAttrs: []
+  });
+  changeCount++;
+  trackedOriginals[`npc.${npc.id}.items.add.${id}.${Date.now()}`] = null;
   updateChangesBar();
   renderCharEditor();
 }
