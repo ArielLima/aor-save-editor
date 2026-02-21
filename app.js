@@ -43,7 +43,7 @@ const SKILLS = [
   { key: 'torture',     bs: 'BSTorture',     label: 'Torture' },
 ];
 
-const WEAPON_TYPES = ['Unarmed', 'One-Handed', 'Two-Handed', 'Polearm', 'Blunt', 'Ranged', 'Short Blade', 'Staff'];
+const WEAPON_TYPES = ['Unarmed', 'One-Handed', 'Two-Handed', 'Shield', 'Ranged', 'Dual Wield', 'Polearm'];
 
 const STATUS_FIELDS = [
   { key: 'health',  label: 'Health',  css: 'health',  max: 100 },
@@ -204,6 +204,13 @@ function escHtml(str) {
   const d = document.createElement('div');
   d.textContent = str;
   return d.innerHTML;
+}
+
+// Clamp to 32-bit signed integer range (game uses int32 for many values)
+const INT32_MAX = 2147483647;
+const INT32_MIN = -2147483648;
+function clampInt32(v) {
+  return Math.max(INT32_MIN, Math.min(INT32_MAX, Math.round(v)));
 }
 
 function itemName(id) {
@@ -628,8 +635,8 @@ function renderSkillsCard(npc, idx) {
 }
 
 function renderWeaponMasteryCard(npc, idx) {
-  const mastery = npc.weaponMastery || [0,0,0,0,0,0,0,0];
-  const masteryExp = npc.weaponMasteryEXP || [0,0,0,0,0,0,0,0];
+  const mastery = npc.weaponMastery || [0,0,0,0,0,0,0];
+  const masteryExp = npc.weaponMasteryEXP || [0,0,0,0,0,0,0];
   // Ensure arrays are long enough for all weapon types
   while (mastery.length < WEAPON_TYPES.length) mastery.push(0);
   while (masteryExp.length < WEAPON_TYPES.length) masteryExp.push(0);
@@ -1074,7 +1081,8 @@ function onGameTimeField(input, key) {
 function onNpcNum(input, npcIdx, key) {
   const npc = saveData.npcs[npcIdx];
   const old = npc[key];
-  const val = Number(input.value);
+  const val = clampInt32(Number(input.value));
+  input.value = val;
   npc[key] = val;
   const path = `npc.${npc.id}.${key}`;
   trackChange(path, old, val);
@@ -1099,7 +1107,8 @@ function onNpcNested(input, npcIdx, parent, key) {
   const npc = saveData.npcs[npcIdx];
   if (!npc[parent]) return;
   const old = npc[parent][key];
-  const val = Number(input.value);
+  const val = clampInt32(Number(input.value));
+  input.value = val;
   npc[parent][key] = val;
   const path = `npc.${npc.id}.${parent}.${key}`;
   trackChange(path, old, val);
