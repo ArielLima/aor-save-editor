@@ -822,6 +822,107 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .stat-input-wide { width: 100px; }
 
+/* --- Card count badge --- */
+.card-count {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  background: rgba(0,0,0,0.3);
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+  margin-left: 0.5rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* --- Add bar at bottom of card --- */
+.card-add-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  border-top: 1px solid var(--border);
+  background: rgba(0,0,0,0.15);
+}
+
+.btn-sm {
+  font-size: 0.65rem;
+  padding: 0.3rem 0.7rem;
+}
+
+/* --- Remove button --- */
+.btn-remove {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 0.4rem;
+  border-radius: var(--radius);
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+.btn-remove:hover {
+  color: var(--danger-light);
+  border-color: rgba(148,48,48,0.3);
+  background: rgba(148,48,48,0.1);
+}
+
+.btn-remove-inline {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  margin-left: 0.3rem;
+  transition: color 0.15s ease;
+  line-height: 1;
+}
+.btn-remove-inline:hover { color: var(--danger-light); }
+
+/* --- Toggle checkbox --- */
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+.toggle-label input[type="checkbox"] {
+  accent-color: var(--accent-gold);
+  cursor: pointer;
+}
+.toggle-text {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* --- Trait chips --- */
+.trait-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.7rem 1.1rem;
+  min-height: 2.5rem;
+  align-items: center;
+}
+
+.trait-chip {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  padding: 0.25rem 0.55rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
 /* ================================================================== */
 /*  STATUS & MASTERY BARS                                              */
 /* ================================================================== */

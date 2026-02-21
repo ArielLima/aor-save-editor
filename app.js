@@ -301,6 +301,9 @@ function renderCharEditor() {
       ${renderResourcesCard(npc, idx)}
       ${renderSkillsCard(npc, idx)}
       ${renderWeaponMasteryCard(npc, idx)}
+      ${renderSpellsCard(npc, idx)}
+      ${renderTalentsCard(npc, idx)}
+      ${renderTraitsCard(npc, idx)}
       ${renderAlignmentCard(npc, idx)}
       ${renderCombatStatsCard(npc, idx)}
     </div>
@@ -551,6 +554,116 @@ function renderWeaponMasteryCard(npc, idx) {
   `;
 }
 
+function renderSpellsCard(npc, idx) {
+  const spells = npc.spells || [];
+  let rows = `
+    <tr class="stat-header-row">
+      <td>Spell ID</td>
+      <td>Level</td>
+      <td>Active</td>
+      <td></td>
+    </tr>
+  `;
+
+  spells.forEach((sp, i) => {
+    rows += `
+      <tr>
+        <td class="stat-label">#${sp.id}</td>
+        <td class="stat-value">
+          <input class="stat-input" type="number" value="${sp.lv}"
+            onchange="onSpellField(${idx}, ${i}, 'lv', Number(this.value))">
+        </td>
+        <td class="stat-value">
+          <label class="toggle-label">
+            <input type="checkbox" ${sp.isActivated ? 'checked' : ''}
+              onchange="onSpellField(${idx}, ${i}, 'isActivated', this.checked)">
+            <span class="toggle-text">${sp.isActivated ? 'On' : 'Off'}</span>
+          </label>
+        </td>
+        <td class="stat-value">
+          <button class="btn-remove" onclick="removeListItem(${idx}, 'spells', ${i})" title="Remove">&times;</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  return `
+    <div class="stat-card">
+      <div class="stat-card-title">
+        Spells
+        <span class="card-count">${spells.length}</span>
+      </div>
+      <table class="stat-table">${rows}</table>
+      <div class="card-add-bar">
+        <input class="stat-input" type="number" placeholder="ID" id="add-spell-id-${idx}" style="width:60px;text-align:center;">
+        <button class="btn btn-sm" onclick="addSpell(${idx})">+ Add Spell</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderTalentsCard(npc, idx) {
+  const talents = npc.talents || [];
+  let rows = `
+    <tr class="stat-header-row">
+      <td>Talent ID</td>
+      <td>Level</td>
+      <td></td>
+    </tr>
+  `;
+
+  talents.forEach((t, i) => {
+    rows += `
+      <tr>
+        <td class="stat-label">#${t.id}</td>
+        <td class="stat-value">
+          <input class="stat-input" type="number" value="${t.lv}"
+            onchange="onTalentField(${idx}, ${i}, 'lv', Number(this.value))">
+        </td>
+        <td class="stat-value">
+          <button class="btn-remove" onclick="removeListItem(${idx}, 'talents', ${i})" title="Remove">&times;</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  return `
+    <div class="stat-card">
+      <div class="stat-card-title">
+        Talents
+        <span class="card-count">${talents.length}</span>
+      </div>
+      <table class="stat-table">${rows}</table>
+      <div class="card-add-bar">
+        <input class="stat-input" type="number" placeholder="ID" id="add-talent-id-${idx}" style="width:60px;text-align:center;">
+        <button class="btn btn-sm" onclick="addTalent(${idx})">+ Add Talent</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderTraitsCard(npc, idx) {
+  const traits = npc.traits || [];
+  let chips = '';
+  traits.forEach((t, i) => {
+    chips += `<span class="trait-chip">#${t}<button class="btn-remove-inline" onclick="removeListItem(${idx}, 'traits', ${i})" title="Remove">&times;</button></span>`;
+  });
+
+  return `
+    <div class="stat-card">
+      <div class="stat-card-title">
+        Traits
+        <span class="card-count">${traits.length}</span>
+      </div>
+      <div class="trait-list">${chips || '<span style="color:var(--text-muted);font-size:0.85rem;">No traits</span>'}</div>
+      <div class="card-add-bar">
+        <input class="stat-input" type="number" placeholder="ID" id="add-trait-id-${idx}" style="width:60px;text-align:center;">
+        <button class="btn btn-sm" onclick="addTrait(${idx})">+ Add Trait</button>
+      </div>
+    </div>
+  `;
+}
+
 function renderAlignmentCard(npc, idx) {
   return `
     <div class="stat-card">
@@ -698,6 +811,75 @@ function onNpcArr(input, npcIdx, arrKey, arrIndex) {
   const path = `npc.${npc.id}.${arrKey}.${arrIndex}`;
   trackChange(path, old, val);
   markInput(input, old, val);
+}
+
+function onSpellField(npcIdx, spellIdx, key, value) {
+  const npc = saveData.npcs[npcIdx];
+  const old = npc.spells[spellIdx][key];
+  npc.spells[spellIdx][key] = value;
+  const path = `npc.${npc.id}.spells.${spellIdx}.${key}`;
+  trackChange(path, old, value);
+  renderCharEditor();
+}
+
+function onTalentField(npcIdx, talentIdx, key, value) {
+  const npc = saveData.npcs[npcIdx];
+  const old = npc.talents[talentIdx][key];
+  npc.talents[talentIdx][key] = value;
+  const path = `npc.${npc.id}.talents.${talentIdx}.${key}`;
+  trackChange(path, old, value);
+  renderCharEditor();
+}
+
+function addSpell(npcIdx) {
+  const npc = saveData.npcs[npcIdx];
+  const input = document.getElementById('add-spell-id-' + npcIdx);
+  const id = Number(input.value);
+  if (isNaN(id) || id < 0) return;
+  if (!npc.spells) npc.spells = [];
+  npc.spells.push({ id: id, lv: 1, cd: 0, isActivated: false });
+  changeCount++;
+  trackedOriginals[`npc.${npc.id}.spells.add.${id}`] = null;
+  updateChangesBar();
+  renderCharEditor();
+}
+
+function addTalent(npcIdx) {
+  const npc = saveData.npcs[npcIdx];
+  const input = document.getElementById('add-talent-id-' + npcIdx);
+  const id = Number(input.value);
+  if (isNaN(id) || id < 0) return;
+  if (!npc.talents) npc.talents = [];
+  npc.talents.push({ id: id, lv: 1, cd: 0 });
+  changeCount++;
+  trackedOriginals[`npc.${npc.id}.talents.add.${id}`] = null;
+  updateChangesBar();
+  renderCharEditor();
+}
+
+function addTrait(npcIdx) {
+  const npc = saveData.npcs[npcIdx];
+  const input = document.getElementById('add-trait-id-' + npcIdx);
+  const id = Number(input.value);
+  if (isNaN(id) || id < 0) return;
+  if (!npc.traits) npc.traits = [];
+  npc.traits.push(id);
+  changeCount++;
+  trackedOriginals[`npc.${npc.id}.traits.add.${id}`] = null;
+  updateChangesBar();
+  renderCharEditor();
+}
+
+function removeListItem(npcIdx, arrKey, itemIdx) {
+  const npc = saveData.npcs[npcIdx];
+  if (!npc[arrKey]) return;
+  const removed = npc[arrKey][itemIdx];
+  npc[arrKey].splice(itemIdx, 1);
+  changeCount++;
+  const removedId = typeof removed === 'object' ? removed.id : removed;
+  trackedOriginals[`npc.${npc.id}.${arrKey}.remove.${removedId}.${Date.now()}`] = removed;
+  updateChangesBar();
+  renderCharEditor();
 }
 
 function markInput(input, oldVal, newVal) {
