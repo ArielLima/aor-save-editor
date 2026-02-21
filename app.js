@@ -790,6 +790,7 @@ function renderTraitsCard(npc, idx) {
 function renderInventoryCard(npc, idx) {
   const items = npc.items || [];
 
+  // Left panel: character's current inventory
   let itemList = '';
   items.forEach((item, i) => {
     const name = itemName(item.id);
@@ -838,26 +839,89 @@ function renderInventoryCard(npc, idx) {
   });
 
   return `
-    <div class="stat-card stat-card-wide">
-      <div class="stat-card-title">
-        Inventory
-        <span class="card-count">${items.length}</span>
-      </div>
-      <div class="inv-list">
-        ${itemList || '<div class="inv-empty">No items</div>'}
-      </div>
-      <div class="card-add-bar">
-        <div class="search-wrap">
-          <input class="stat-input search-input" type="text" placeholder="Search items..." id="add-item-search-${idx}" data-db="items" autocomplete="off"
-            oninput="filterSearch('add-item-search-${idx}', 'add-item-search-${idx}-dropdown', ITEM_DB)"
-            onblur="clearSearchDropdown('add-item-search-${idx}')">
-          <div class="search-dropdown" id="add-item-search-${idx}-dropdown"></div>
+    <div class="inv-layout stat-card-wide">
+      <div class="inv-panel inv-panel-owned">
+        <div class="stat-card-title">
+          Inventory
+          <span class="card-count">${items.length}</span>
         </div>
-        <input class="stat-input" type="number" placeholder="Qty" id="add-item-qty-${idx}" style="width:50px;text-align:center;" value="1">
-        <button class="btn btn-sm" onclick="addItemFromSearch(${idx}, 'add-item-search-${idx}')">+ Add</button>
+        <div class="inv-list">
+          ${itemList || '<div class="inv-empty">No items</div>'}
+        </div>
+      </div>
+      <div class="inv-panel inv-panel-catalog">
+        <div class="stat-card-title">Item Catalog</div>
+        <div class="inv-catalog-search">
+          <input class="stat-input search-input" type="text" placeholder="Search items by name..." id="inv-catalog-search-${idx}"
+            oninput="filterItemCatalog(${idx})" autocomplete="off">
+        </div>
+        <div class="inv-catalog-list" id="inv-catalog-list-${idx}">
+          <div class="inv-empty">Type to search ${Object.keys(ITEM_DB).length} items</div>
+        </div>
       </div>
     </div>
   `;
+}
+
+function filterItemCatalog(npcIdx) {
+  const input = document.getElementById('inv-catalog-search-' + npcIdx);
+  const list = document.getElementById('inv-catalog-list-' + npcIdx);
+  if (!input || !list) return;
+  const query = input.value.toLowerCase().trim();
+  if (!query) {
+    list.innerHTML = '<div class="inv-empty">Type to search ' + Object.keys(ITEM_DB).length + ' items</div>';
+    return;
+  }
+  const results = [];
+  for (const [id, entry] of Object.entries(ITEM_DB)) {
+    if (entry.en.toLowerCase().includes(query) || id === query) {
+      results.push({ id: Number(id), name: entry.en });
+    }
+    if (results.length >= 50) break;
+  }
+  if (results.length === 0) {
+    list.innerHTML = '<div class="inv-empty">No items match "' + escHtml(query) + '"</div>';
+    return;
+  }
+  list.innerHTML = results.map(r =>
+    `<div class="catalog-item" onclick="addItemDirect(${npcIdx}, ${r.id})">
+      <span class="catalog-item-name">${escHtml(r.name)}</span>
+      <span class="catalog-item-id">#${r.id}</span>
+      <button class="btn btn-sm catalog-add-btn">+ Add</button>
+    </div>`
+  ).join('');
+}
+
+function addItemDirect(npcIdx, itemId) {
+  const npc = saveData.npcs[npcIdx];
+  if (!npc.items) npc.items = [];
+  const usedSlots = new Set(npc.items.map(i => i.slotIndex));
+  let slot = 0;
+  while (usedSlots.has(slot)) slot++;
+  npc.items.push({
+    id: itemId,
+    slotIndex: slot,
+    subSlotIndex: 0,
+    stackNum: 1,
+    isNew: true,
+    isStolen: 0,
+    durability: -1,
+    quality: 1,
+    addAttrs: []
+  });
+  changeCount++;
+  trackedOriginals[`npc.${npc.id}.items.add.${itemId}.${Date.now()}`] = null;
+  updateChangesBar();
+  // Preserve search query and re-render
+  const searchInput = document.getElementById('inv-catalog-search-' + npcIdx);
+  const query = searchInput ? searchInput.value : '';
+  renderCharEditor();
+  // Restore search state
+  const newInput = document.getElementById('inv-catalog-search-' + npcIdx);
+  if (newInput && query) {
+    newInput.value = query;
+    filterItemCatalog(npcIdx);
+  }
 }
 
 function renderAlignmentCard(npc, idx) {
