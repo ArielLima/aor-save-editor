@@ -306,6 +306,7 @@ function renderCharEditor() {
       ${renderSpellsCard(npc, idx)}
       ${renderTalentsCard(npc, idx)}
       ${renderTraitsCard(npc, idx)}
+      ${renderInventoryCard(npc, idx)}
       ${renderAlignmentCard(npc, idx)}
       ${renderCombatStatsCard(npc, idx)}
     </div>
@@ -666,6 +667,55 @@ function renderTraitsCard(npc, idx) {
   `;
 }
 
+function renderInventoryCard(npc, idx) {
+  const items = npc.items || [];
+  let rows = `
+    <tr class="stat-header-row">
+      <td>Item ID</td>
+      <td>Qty</td>
+      <td>Quality</td>
+      <td>Durability</td>
+      <td></td>
+    </tr>
+  `;
+
+  items.forEach((item, i) => {
+    const dur = item.durability === -1 ? 'Consumable' : Number(item.durability).toFixed(1);
+    rows += `
+      <tr>
+        <td class="stat-label">#${item.id}</td>
+        <td class="stat-value">
+          <input class="stat-input" type="number" value="${item.stackNum}" style="width:50px;"
+            onchange="onItemField(${idx}, ${i}, 'stackNum', Number(this.value))">
+        </td>
+        <td class="stat-value">
+          <input class="stat-input" type="number" value="${item.quality}" style="width:50px;"
+            onchange="onItemField(${idx}, ${i}, 'quality', Number(this.value))">
+        </td>
+        <td class="stat-value"><span style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-muted);">${dur}</span></td>
+        <td class="stat-value">
+          <button class="btn-remove" onclick="removeListItem(${idx}, 'items', ${i})" title="Remove">&times;</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  return `
+    <div class="stat-card">
+      <div class="stat-card-title">
+        Inventory
+        <span class="card-count">${items.length}</span>
+      </div>
+      <table class="stat-table">${rows}</table>
+      <div class="card-add-bar">
+        <input class="stat-input" type="number" placeholder="ID" id="add-item-id-${idx}" style="width:60px;text-align:center;">
+        <input class="stat-input" type="number" placeholder="Qty" id="add-item-qty-${idx}" style="width:50px;text-align:center;" value="1">
+        <button class="btn btn-sm" onclick="addItem(${idx})">+ Add Item</button>
+      </div>
+    </div>
+  `;
+}
+
 function renderAlignmentCard(npc, idx) {
   return `
     <div class="stat-card">
@@ -889,6 +939,43 @@ function addTrait(npcIdx) {
   npc.traits.push(id);
   changeCount++;
   trackedOriginals[`npc.${npc.id}.traits.add.${id}`] = null;
+  updateChangesBar();
+  renderCharEditor();
+}
+
+function onItemField(npcIdx, itemIdx, key, value) {
+  const npc = saveData.npcs[npcIdx];
+  const old = npc.items[itemIdx][key];
+  npc.items[itemIdx][key] = value;
+  const path = `npc.${npc.id}.items.${itemIdx}.${key}`;
+  trackChange(path, old, value);
+}
+
+function addItem(npcIdx) {
+  const npc = saveData.npcs[npcIdx];
+  const idInput = document.getElementById('add-item-id-' + npcIdx);
+  const qtyInput = document.getElementById('add-item-qty-' + npcIdx);
+  const id = Number(idInput.value);
+  const qty = Number(qtyInput.value) || 1;
+  if (isNaN(id) || id < 0) return;
+  if (!npc.items) npc.items = [];
+  // Find next available slotIndex
+  const usedSlots = new Set(npc.items.map(i => i.slotIndex));
+  let slot = 0;
+  while (usedSlots.has(slot)) slot++;
+  npc.items.push({
+    id: id,
+    slotIndex: slot,
+    subSlotIndex: 0,
+    stackNum: qty,
+    isNew: true,
+    isStolen: 0,
+    durability: -1,
+    quality: 1,
+    addAttrs: []
+  });
+  changeCount++;
+  trackedOriginals[`npc.${npc.id}.items.add.${id}.${Date.now()}`] = null;
   updateChangesBar();
   renderCharEditor();
 }
