@@ -791,6 +791,12 @@ body::after {
   color: var(--text-primary);
   text-align: right;
   transition: all 0.2s ease;
+  -moz-appearance: textfield;
+}
+.stat-input::-webkit-outer-spin-button,
+.stat-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .stat-input:hover { border-color: var(--border); }
