@@ -37,7 +37,7 @@ const SKILLS = [
   { key: 'torture',     bs: 'BSTorture',     label: 'Torture' },
 ];
 
-const WEAPON_TYPES = ['One-Handed', 'Two-Handed', 'Polearm', 'Blunt', 'Ranged', 'Short Blade', 'Staff'];
+const WEAPON_TYPES = ['Unarmed', 'One-Handed', 'Two-Handed', 'Polearm', 'Blunt', 'Ranged', 'Short Blade', 'Staff'];
 
 const STATUS_FIELDS = [
   { key: 'health',  label: 'Health',  css: 'health',  max: 100 },
@@ -505,8 +505,11 @@ function renderSkillsCard(npc, idx) {
 }
 
 function renderWeaponMasteryCard(npc, idx) {
-  const mastery = npc.weaponMastery || [0,0,0,0,0,0,0];
-  const masteryExp = npc.weaponMasteryEXP || [0,0,0,0,0,0,0];
+  const mastery = npc.weaponMastery || [0,0,0,0,0,0,0,0];
+  const masteryExp = npc.weaponMasteryEXP || [0,0,0,0,0,0,0,0];
+  // Ensure arrays are long enough for all weapon types
+  while (mastery.length < WEAPON_TYPES.length) mastery.push(0);
+  while (masteryExp.length < WEAPON_TYPES.length) masteryExp.push(0);
   const maxMastery = Math.max(1, ...mastery);
 
   let rows = `
@@ -687,7 +690,8 @@ function onNpcSkillExp(input, npcIdx, skillIndex) {
 
 function onNpcArr(input, npcIdx, arrKey, arrIndex) {
   const npc = saveData.npcs[npcIdx];
-  if (!npc[arrKey]) return;
+  if (!npc[arrKey]) npc[arrKey] = [];
+  while (npc[arrKey].length <= arrIndex) npc[arrKey].push(0);
   const old = npc[arrKey][arrIndex];
   const val = Number(input.value);
   npc[arrKey][arrIndex] = val;
