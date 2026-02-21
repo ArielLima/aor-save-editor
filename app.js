@@ -291,7 +291,9 @@ function renderCharEditor() {
         <span>${genderName(npc.gender)}</span>
         <span>${raceName(npc.race)}</span>
         <span>${careerName(npc.career)}</span>
-        ${isParty ? '<span style="color:var(--accent-gold);">&#9733; Party Member</span>' : ''}
+        ${isParty
+          ? '<button class="btn btn-danger btn-sm" onclick="removeFromParty(' + npc.id + ')">Remove from Party</button>'
+          : '<button class="btn btn-gold btn-sm" onclick="addToParty(' + npc.id + ')">+ Add to Party</button>'}
       </div>
     </div>
     <div class="stat-grid">
@@ -725,6 +727,27 @@ function selectChar(id) {
   renderPartyTabs();
   renderNpcList();
   renderCharEditor();
+}
+
+function addToParty(npcId) {
+  if (!saveData.party || !saveData.party.membersID) return;
+  if (saveData.party.membersID.includes(npcId)) return;
+  saveData.party.membersID.push(npcId);
+  changeCount++;
+  trackedOriginals[`party.add.${npcId}`] = null;
+  updateChangesBar();
+  renderAll();
+}
+
+function removeFromParty(npcId) {
+  if (!saveData.party || !saveData.party.membersID) return;
+  const idx = saveData.party.membersID.indexOf(npcId);
+  if (idx === -1) return;
+  saveData.party.membersID.splice(idx, 1);
+  changeCount++;
+  trackedOriginals[`party.remove.${npcId}.${Date.now()}`] = npcId;
+  updateChangesBar();
+  renderAll();
 }
 
 function onGameField(input, key) {
