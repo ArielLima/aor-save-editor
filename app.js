@@ -506,14 +506,12 @@ function renderAttributesCard(npc, idx) {
     // Show effective value: Current if non-zero, otherwise Base
     const effectiveVal = curVal || bsVal;
     const expVal = npc.humanAttribute && npc.humanAttribute.attEXP ? npc.humanAttribute.attEXP[i] : 0;
-    const warn = effectiveVal > 90 ? ' title="Warning: equipment bonuses may push total past 99 causing in-game overflow"' : '';
-
     rows += `
       <tr>
         <td class="stat-label">${attr.label}</td>
         <td class="stat-value">
-          <input class="stat-input${effectiveVal > 90 ? ' stat-warn' : ''}" type="number" min="0" value="${effectiveVal}"
-            ${warn} onchange="onAttrLevel(this, ${idx}, '${attr.key}', '${attr.bs}')">
+          <input class="stat-input" type="number" min="0" value="${effectiveVal}"
+            onchange="onAttrLevel(this, ${idx}, '${attr.key}', '${attr.bs}')">
         </td>
         <td class="stat-value">
           <input class="stat-input" type="number" step="0.01" value="${Number(expVal).toFixed(2)}"
@@ -604,14 +602,12 @@ function renderSkillsCard(npc, idx) {
     const curVal = npc[sk.key];
     const effectiveVal = curVal || bsVal;
     const expVal = npc.humanTalent && npc.humanTalent.skillEXP ? npc.humanTalent.skillEXP[i] : 0;
-    const warn = effectiveVal > 90 ? ' title="Warning: equipment bonuses may push total past 99 causing in-game overflow"' : '';
-
     rows += `
       <tr>
         <td class="stat-label">${sk.label}</td>
         <td class="stat-value">
-          <input class="stat-input${effectiveVal > 90 ? ' stat-warn' : ''}" type="number" min="0" value="${effectiveVal}"
-            ${warn} onchange="onSkillLevel(this, ${idx}, '${sk.key}', '${sk.bs}')">
+          <input class="stat-input" type="number" min="0" value="${effectiveVal}"
+            onchange="onSkillLevel(this, ${idx}, '${sk.key}', '${sk.bs}')">
         </td>
         <td class="stat-value">
           <input class="stat-input" type="number" step="0.01" value="${Number(expVal).toFixed(2)}"

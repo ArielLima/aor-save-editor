@@ -853,11 +853,6 @@ input[type="number"]::-webkit-inner-spin-button {
   border-color: var(--accent-gold-dim);
 }
 
-.stat-input.stat-warn {
-  border-color: #a85c20;
-  background: rgba(168,92,32,0.1);
-}
-
 .stat-input-wide { width: 100px; }
 
 /* --- Searchable dropdown --- */
