@@ -851,8 +851,9 @@ function renderInventoryCard(npc, idx) {
     let addAttrHtml = '';
     if (item.addAttrs && item.addAttrs.length > 0) {
       const attrChips = item.addAttrs.map(a => {
-        const attrLabel = addonAttrName(a.id) || ('Attr #' + a.id);
-        return `<span class="item-attr-chip" title="ID: ${a.id}">${escHtml(attrLabel)}: ${a.value}</span>`;
+        const attrType = a.type !== undefined ? a.type : a.id;
+        const attrLabel = addonAttrName(attrType) || ('Attr #' + attrType);
+        return `<span class="item-attr-chip" title="Type: ${attrType}">${escHtml(attrLabel)}: ${a.value}</span>`;
       }).join('');
       addAttrHtml = `<div class="item-attrs">${attrChips}</div>`;
     }
@@ -881,7 +882,10 @@ function renderInventoryCard(npc, idx) {
           </label>
           <label class="inv-field">
             <span class="inv-field-label">${durLabel}</span>
-            <span class="inv-field-value">${dur}</span>
+            ${item.durability === -1
+              ? `<span class="inv-field-value">Consumable</span>`
+              : `<input class="stat-input" type="number" value="${Number(item.durability).toFixed(1)}" style="width:70px;" step="0.1"
+                  onchange="onItemField(${idx}, ${i}, 'durability', Number(this.value))">`}
           </label>
         </div>
         ${addAttrHtml}
@@ -949,7 +953,7 @@ function addItemDirect(npcIdx, itemId) {
     stackNum: 1,
     isNew: true,
     isStolen: 0,
-    durability: -1,
+    durability: 100,
     quality: 1,
     addAttrs: []
   });
@@ -1263,7 +1267,7 @@ function addItemFromSearch(npcIdx, inputId) {
     stackNum: qty,
     isNew: true,
     isStolen: 0,
-    durability: -1,
+    durability: 100,
     quality: 1,
     addAttrs: []
   });
@@ -1300,7 +1304,7 @@ function addItem(npcIdx) {
     stackNum: qty,
     isNew: true,
     isStolen: 0,
-    durability: -1,
+    durability: 100,
     quality: 1,
     addAttrs: []
   });
