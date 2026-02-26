@@ -373,6 +373,13 @@ function renderCharEditor() {
     return;
   }
 
+  // Save scroll positions before re-render
+  const scrollY = window.scrollY;
+  const invList = document.querySelector('.inv-list');
+  const catalogList = document.querySelector('.inv-catalog-list');
+  const invListScroll = invList ? invList.scrollTop : 0;
+  const catalogListScroll = catalogList ? catalogList.scrollTop : 0;
+
   const idx = findNpcIndex(selectedCharId);
   const isParty = getPartyIds().includes(npc.id);
 
@@ -410,6 +417,13 @@ function renderCharEditor() {
   } else if (activeEditorTab === 'powers') {
     filterTraitCatalog(idx);
   }
+
+  // Restore scroll positions after re-render
+  window.scrollTo(0, scrollY);
+  const newInvList = document.querySelector('.inv-list');
+  const newCatalogList = document.querySelector('.inv-catalog-list');
+  if (newInvList) newInvList.scrollTop = invListScroll;
+  if (newCatalogList) newCatalogList.scrollTop = catalogListScroll;
 }
 
 function renderTabContent(npc, idx) {
