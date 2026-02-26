@@ -72,6 +72,80 @@ const EDITOR_TABS = [
   { id: 'abilities',  label: 'Abilities' },
   { id: 'powers',     label: 'Powers' },
   { id: 'inventory',  label: 'Inventory' },
+  { id: 'builds',     label: 'Builds' },
+];
+
+const BUILD_PRESETS = [
+  {
+    name: 'Immortal Blood Knight',
+    description: 'Tank + damage + self-sustain. Dual death prevention, 80% damage absorption, 30% life leech, massive flat DR. Uses Defender, Berserker, Battlemonk, Shapeshifter passives + Blood/White/Earth magic.',
+    skillSets: [1, 2, 3, 7, 9, 10, 11, 104, 105, 109, 111],
+    talents: [
+      { id: 204, lv: 5 }, { id: 48, lv: 5 }, { id: 104, lv: 5 },
+      { id: 18, lv: 5 }, { id: 8, lv: 5 }, { id: 146, lv: 5 }, { id: 198, lv: 5 },
+      { id: 205, lv: 5 }, { id: 211, lv: 5 }, { id: 207, lv: 5 }, { id: 216, lv: 5 },
+      { id: 49, lv: 3 }, { id: 51, lv: 3 }, { id: 52, lv: 3 },
+      { id: 105, lv: 3 }, { id: 148, lv: 3 }, { id: 181, lv: 3 }, { id: 178, lv: 3 },
+      { id: 68, lv: 3 }, { id: 3, lv: 3 }, { id: 1, lv: 3 }, { id: 2, lv: 3 },
+    ],
+    spells: [
+      { id: 171 }, { id: 313 }, { id: 68 }, { id: 194 },
+      { id: 4 }, { id: 0 }, { id: 168 }, { id: 21 },
+    ],
+    weaponMastery: [0, 0, 50, 0, 0, 0, 0],
+    books: [2273, 2271, 2275, 2272, 2279, 1119, 1267, 2082],
+  },
+  {
+    name: 'Annihilator',
+    description: 'Maximum burst DPS. +71 flat damage per swing from stacked Cunning, ConcentrativeMode, and weapon passives. 8-second AoE rotation with SpiralSlash spam.',
+    skillSets: [1, 4, 5, 8],
+    talents: [
+      { id: 56, lv: 5 }, { id: 40, lv: 5 }, { id: 111, lv: 5 }, { id: 18, lv: 5 },
+      { id: 53, lv: 3 }, { id: 109, lv: 3 },
+      { id: 68, lv: 3 }, { id: 3, lv: 3 }, { id: 1, lv: 3 }, { id: 2, lv: 3 },
+    ],
+    spells: [
+      { id: 4 }, { id: 1 }, { id: 0 }, { id: 74 },
+      { id: 45 }, { id: 73 }, { id: 56 },
+    ],
+    weaponMastery: [0, 0, 50, 0, 0, 0, 0],
+    books: [2278, 2274, 2276, 2275],
+  },
+  {
+    name: 'Undying Warlord',
+    description: 'Summons + melee hybrid. Commander auras buff your skeleton army. Each summon boosts Power_In_Numbers damage. Triple absorption shields stack simultaneously.',
+    skillSets: [2, 3, 11, 108, 109, 110],
+    talents: [
+      { id: 8, lv: 5 }, { id: 48, lv: 5 }, { id: 198, lv: 5 },
+      { id: 206, lv: 5 }, { id: 209, lv: 5 }, { id: 216, lv: 5 },
+      { id: 10, lv: 3 }, { id: 181, lv: 3 }, { id: 178, lv: 3 },
+      { id: 68, lv: 3 }, { id: 3, lv: 3 }, { id: 1, lv: 3 }, { id: 2, lv: 3 },
+    ],
+    spells: [
+      { id: 257 }, { id: 242 }, { id: 312 }, { id: 4 }, { id: 0 },
+    ],
+    weaponMastery: [0, 0, 50, 0, 0, 0, 0],
+    books: [2272, 2273, 2006, 2083],
+  },
+  {
+    name: 'Pure Martial',
+    description: 'No magic required. All combat classes stacked. Double death prevention, ConcentrativeMode +35 weapon damage, Cunning +16 melee. Works on any non-magician character.',
+    skillSets: [1, 2, 3, 4, 5, 7, 8, 10],
+    talents: [
+      { id: 204, lv: 5 }, { id: 48, lv: 5 }, { id: 18, lv: 5 },
+      { id: 8, lv: 5 }, { id: 104, lv: 5 }, { id: 56, lv: 5 },
+      { id: 40, lv: 5 }, { id: 111, lv: 5 },
+      { id: 53, lv: 3 }, { id: 52, lv: 3 }, { id: 105, lv: 3 },
+      { id: 49, lv: 3 }, { id: 51, lv: 3 },
+      { id: 68, lv: 3 }, { id: 3, lv: 3 }, { id: 1, lv: 3 }, { id: 2, lv: 3 },
+    ],
+    spells: [
+      { id: 4 }, { id: 1 }, { id: 0 }, { id: 2 },
+      { id: 74 }, { id: 45 }, { id: 68 }, { id: 73 }, { id: 56 },
+    ],
+    weaponMastery: [0, 0, 50, 0, 0, 0, 0],
+    books: [2275, 2272, 2273, 2271, 2278, 2274, 2276],
+  },
 ];
 
 // =====================================================================
@@ -443,6 +517,8 @@ function renderTabContent(npc, idx) {
            + renderTraitsCard(npc, idx);
     case 'inventory':
       return renderInventoryCard(npc, idx);
+    case 'builds':
+      return renderBuildsTab(npc, idx);
     default:
       return '';
   }
@@ -928,6 +1004,125 @@ function renderInventoryCard(npc, idx) {
       </div>
     </div>
   `;
+}
+
+function renderBuildsTab(npc, idx) {
+  let cards = '';
+  BUILD_PRESETS.forEach((preset, i) => {
+    const classCount = preset.skillSets.filter(s => s < 100).length;
+    const magicCount = preset.skillSets.filter(s => s >= 100).length;
+    const talentCount = preset.talents.length;
+    const spellCount = preset.spells.length;
+
+    cards += `
+      <div class="stat-card build-card">
+        <div class="build-card-header">
+          <div class="build-card-name">${escHtml(preset.name)}</div>
+          <button class="btn btn-gold btn-sm" onclick="applyBuildPreset(${idx}, ${i})">Apply Build</button>
+        </div>
+        <div class="build-card-desc">${escHtml(preset.description)}</div>
+        <div class="build-card-stats">
+          <span class="build-stat">${classCount} classes</span>
+          ${magicCount ? `<span class="build-stat">${magicCount} magic</span>` : ''}
+          <span class="build-stat">${talentCount} talents</span>
+          <span class="build-stat">${spellCount} spells</span>
+          <span class="build-stat">Two-Hand ${preset.weaponMastery[2]}</span>
+        </div>
+      </div>
+    `;
+  });
+
+  return `
+    <div class="stat-card-wide">
+      <div class="stat-card-title">Build Presets</div>
+      <div class="builds-list">
+        ${cards}
+      </div>
+    </div>
+  `;
+}
+
+function applyBuildPreset(npcIdx, buildIndex) {
+  const preset = BUILD_PRESETS[buildIndex];
+  if (!preset) return;
+  if (!confirm('Apply "' + preset.name + '" build?\n\nThis adds skillSets, talents, spells, weapon mastery, and class books.\nExisting entries are updated, not duplicated.')) return;
+
+  const npc = saveData.npcs[npcIdx];
+
+  // 1. SkillSets
+  if (!npc.skillSet) npc.skillSet = [];
+  for (const ss of preset.skillSets) {
+    if (!npc.skillSet.includes(ss)) {
+      npc.skillSet.push(ss);
+      changeCount++;
+      trackedOriginals['npc.' + npc.id + '.skillSet.add.' + ss] = null;
+    }
+  }
+
+  // 2. Talents (upsert)
+  if (!npc.talents) npc.talents = [];
+  for (const pt of preset.talents) {
+    const existing = npc.talents.find(t => t.id === pt.id);
+    if (existing) {
+      if (existing.lv < pt.lv) {
+        trackedOriginals['npc.' + npc.id + '.talents.' + pt.id + '.lv'] = existing.lv;
+        existing.lv = pt.lv;
+        changeCount++;
+      }
+    } else {
+      npc.talents.push({ id: pt.id, lv: pt.lv, cd: 0 });
+      changeCount++;
+      trackedOriginals['npc.' + npc.id + '.talents.add.' + pt.id] = null;
+    }
+  }
+
+  // 3. Spells (upsert)
+  if (!npc.spells) npc.spells = [];
+  for (const ps of preset.spells) {
+    const existing = npc.spells.find(s => s.id === ps.id);
+    if (!existing) {
+      npc.spells.push({ id: ps.id, lv: ps.lv || 3, cd: 0, isActivated: false });
+      changeCount++;
+      trackedOriginals['npc.' + npc.id + '.spells.add.' + ps.id] = null;
+    }
+  }
+
+  // 4. Weapon mastery (only increase)
+  if (!npc.weaponMastery) npc.weaponMastery = [0,0,0,0,0,0,0];
+  if (!npc.weaponMasteryEXP) npc.weaponMasteryEXP = [0,0,0,0,0,0,0];
+  while (npc.weaponMastery.length < 7) npc.weaponMastery.push(0);
+  while (npc.weaponMasteryEXP.length < 7) npc.weaponMasteryEXP.push(0);
+  for (let i = 0; i < preset.weaponMastery.length; i++) {
+    if (preset.weaponMastery[i] > npc.weaponMastery[i]) {
+      trackedOriginals['npc.' + npc.id + '.weaponMastery.' + i] = npc.weaponMastery[i];
+      npc.weaponMastery[i] = preset.weaponMastery[i];
+      changeCount++;
+    }
+  }
+
+  // 5. Books (add to inventory if not owned)
+  if (preset.books && preset.books.length > 0) {
+    if (!npc.items) npc.items = [];
+    const ownedIds = new Set(npc.items.map(it => it.id));
+    const usedSlots = new Set(npc.items.map(it => it.slotIndex));
+    let slot = 0;
+    for (const bookId of preset.books) {
+      if (ownedIds.has(bookId)) continue;
+      while (usedSlots.has(slot)) slot++;
+      npc.items.push({
+        id: bookId, slotIndex: slot, subSlotIndex: 0,
+        stackNum: 1, isNew: true, isStolen: 0,
+        durability: 100, quality: 1, addAttrs: []
+      });
+      usedSlots.add(slot);
+      changeCount++;
+      trackedOriginals['npc.' + npc.id + '.items.add.' + bookId + '.' + Date.now()] = null;
+      slot++;
+    }
+  }
+
+  updateChangesBar();
+  renderCharEditor();
 }
 
 function filterItemCatalog(npcIdx) {
