@@ -77,528 +77,201 @@ const EDITOR_TABS = [
 
 const BUILD_PRESETS = [
   // =========================================================================
-  // BUILD 1: IMMORTAL BLOOD KNIGHT
-  // Tank + sustain + magic shields. Defender/Berserker/Battlemonk/Commander
-  // passives layered with Blood/White/Earth magic shields and healing.
+  // BUILD 1: ETERNAL BULWARK — Pure Tank (3 combat classes, no magic)
+  // Defender + Berserker + Battlemonk. 2 defensive toggles, 2 death saves.
   // =========================================================================
-  // CLASS SPELLS INCLUDED (all verified Mace/heavy plate compatible):
-  //
-  // -- Battlemonk (SkillSet 9, RequireWeapon includes Mace) --
-  // [171] EnergyShield    - Self buff, CD 20s. Absorbs 40+10/lv damage for 8s. NO WEAPON REQ CHECK ON CAST. Core shield.
-  // [170] EnergyBurst     - AoE blast around self, CD 16s, 20 MP. 4+4/lv damage. Melee AoE clear.
-  // [169] EnergyBlast     - Ranged line attack, CD 15s, 12 MP. 10+10/lv damage. Gap filler vs ranged.
-  // [168] ChiHeal         - Ground AoE heal, CD 30s, 16 MP. Heals 9+9/lv over 5s. Party sustain.
-  // [172] LandingAttack   - Jump attack, CD 30s, 50 MP. 85+15/lv% weapon dmg AoE. Gap closer + AoE.
-  //
-  // -- Defender (SkillSet 3, RequireWeapon includes Mace) --
-  // [68]  Fortress        - Self buff, CD 28s, 10 MP. +1+1/lv armor, +5+5/lv block for 8s. Tank steroid.
-  // [70]  ImpairAttack    - Enhanced melee, CD 14s. 50+15/lv% weapon dmg, reduces enemy damage 10+10/lv for 8s.
-  // [67]  FocusBlock      - Passive stance, CD 5s. +25+25/lv block value, +5+5/lv parry. Defensive posture.
-  // [69]  Guardian        - Ally buff, CD 60s, 15 MP. Absorbs 20+10/lv% damage for an ally.
-  // [19]  Intercept       - Dash to ally, CD 20s, 25 MP. Intercept attacks for 1+1/lv hits.
-  //
-  // -- Commander (SkillSet 2, no weapon requirement) --
-  // [21]  FirstAid        - Heal ally, CD 30s, 12 MP. Heals 12+12/lv over 6s. Emergency heal.
-  // [32]  Condemn         - Debuff enemy, CD 15s, 10 MP. -5-5/lv debuff for 9+1/lv s. Damage amplifier.
-  // [43]  Stimulate       - Buff ally, CD 15s, 15 MP. +10+10/lv damage, +5+5/lv speed for 7s.
-  // [24]  WarRoar         - AoE buff/debuff, CD 24s, 18 MP. +5+5/lv morale boost, 12s radius.
-  // [34]  WarBanner       - Summon banner, CD 30s, 24 MP. Aura buff 4+2/lv for 10s radius.
-  // [36]  Rescue          - Revive ally, CD 60s, 25 MP. Heals 5+10/lv on dead ally.
-  //
-  // -- Berserker (SkillSet 7, RequireWeapon includes Mace) --
-  // [128] UnleashRage     - Self buff, CD 18s. +10/lv attack power for 15s when HP>50%.
-  // [127] SuppressAnger   - Self buff, CD 18s. +1+1/lv DR when HP<50%, 7s. Clutch survival.
-  // [125] HeadButt        - Melee stun, CD 12s, 15 MP. 25+25/lv force, stun 1.5+0.5/lv s. No weapon req.
-  // [126] RecklessPosture - Toggle stance, CD 5s, 1 MP/s. +6+6/lv attack, -25% defense.
-  // [124] Execute         - Enhanced melee, CD 16s. 100+10/lv% weapon dmg, +20+20/lv bonus vs <33% HP.
-  //
-  // -- Duelist (SkillSet 4) --
-  // [55]  Challenge       - Taunt, CD 15s, 10 MP. Taunts enemy for 2+2/lv s. No weapon req.
-  // [57]  BreakFree       - Self cleanse, CD 14s, 9 MP. Remove 2+1/lv debuffs, +10+10/lv DR. No weapon req.
-  //
-  // -- Rogue (SkillSet 5) --
-  // [72]  BlindingDust    - CC, CD 15s, 5 MP. Blind for 3s at 50% chance, 2+2/lv debuff. No weapon req.
-  // [73]  EnvenomedWeapon - Self buff, CD 25s. Poison 2+1/lv dmg for 15s, 5s ticks. Req Mace OK.
-  // [58]  Evasion         - Dodge buff, CD 20-2/lv s, 9 MP. +20+20/lv dodge for 5s. No weapon req.
-  //
-  // -- Blood Magic (SkillSet 109, no weapon req unless noted) --
-  // [312] BloodShield     - Self shield, CD 45s, 60 MP + 1/s. Absorbs 10+10/lv dmg for 10s. Core shield.
-  // [313] BloodThirstyWeapon - Self buff, CD 10s, 15 MP. +3+2/lv life leech. Req Mace OK.
-  // [310] BloodScourge    - AoE, CD 24s, 16 MP. 5+5/lv dmg + 5+5/lv bleed, 5s duration.
-  // [311] BloodSeethe     - Single target, CD 24s, 16 MP. 10+5/lv dmg + 20+10/lv bleed.
-  // [309] BloodReap       - Melee chain, CD 35s, 20 MP. 75+25/lv% weapon dmg.
-  // [217] BloodDrain      - Life drain, CD 50s, 10 MP. Drains 5+10/lv HP.
-  // [308] BloodMist       - AoE DoT, CD 40s, 30 MP. 2+2/lv dmg for 10s in 5m area.
-  // [314] BloodThorn      - Root, CD 55s, 40 MP. 10+20/lv dmg, root 1+2/lv s.
-  //
-  // -- White Magic (SkillSet 104, no weapon req) --
-  // [194] GlimmeringCloak - Self buff, CD 25s, 30 MP. +5+5/lv armor, +10+5/lv magic DR.
-  // [195] HealingLight    - Heal, CD 18s, 24 MP. 2+2/lv HP + 1+1/lv regen for 5s.
-  // [197] LightedWeapons  - Self buff, CD 25s, 30 MP. +3+3/lv light dmg, 30s dur, +10+5/lv.
-  //
-  // -- Earth Magic (SkillSet 111, no weapon req except RockFist) --
-  // [285] RockArmor       - Self buff, CD 35s, 40 MP + 4/s. +25+15/lv armor, +10/lv resist, +6/lv DR.
-  //
-  // -- Necromancy (SkillSet 108, no weapon req) --
-  // [242] BoneArmor       - Self shield, CD 30s, 32 MP + 1/s. Absorbs 20+25/lv dmg for 25s.
-  //
-  // WEAPON SKILLS (SkillSet 202 = Mace/TwoHand):
-  // [4]  SpiralSlash  - AoE sweep, CD 8s. 88+12/lv% weapon dmg. Bread & butter AoE.
-  // [1]  ChargeAttack - Gap closer, CD 13s. 120+10/lv range, 85+15/lv% dmg. Engager.
-  // [0]  ArmourCrash  - Armor shred, CD 10s. -6-6/lv armor for 7+1/lv s. Debuff.
-  // [2]  HiltStrike   - Stun hit, CD 12s. 20+10/lv force, stun 2+1/lv s. CC.
-  // [5]  TrioSlash    - Big AoE, CD 18s. 60+10/lv% weapon dmg, large cone.
-  // [3]  MightyGuard  - Defensive stance, CD 5s. +5+5/lv block, 14+1/lv parry.
   {
-    name: 'Immortal Blood Knight',
-    description: 'Tank + sustain + magic shields. Triple absorption layers (EnergyShield + BloodShield + BoneArmor + RockArmor), BloodThirstyWeapon leech, Fortress armor buff, dual death prevention (DeathResist + Unyielding), GlimmeringCloak + HealingLight sustain. 28 active abilities.',
-    skillSets: [1, 2, 3, 4, 5, 7, 9, 104, 108, 109, 111],
+    name: 'Eternal Bulwark',
+    description: 'Pure tank — 2 permanent toggles (MightyGuard + FocusBlock) for +100 block/+40 parry. Double death prevention. +30 Heavy Plate DR, +20 MagicDR, +30% armor. 7 spells, AI rotates only 5 after toggles.',
+    skillSets: [3, 7, 9],
     talents: [
-      // Mastery nodes
-      { id: 48, lv: 5 },   // Defender mastery - +2 slash/pierce/blunt resist per lv
-      { id: 104, lv: 5 },  // Berserker mastery - +20% attack speed buff on rage
-      { id: 146, lv: 5 },  // Battlemonk mastery - +20% phys/magic DR scaling
-      { id: 18, lv: 5 },   // Fighter mastery - +3% persuasion per lv
-      { id: 8, lv: 5 },    // Commander mastery - +20% aura radius
-      { id: 198, lv: 5 },  // Shapeshifter mastery - +5 HealPower/lv
-      { id: 216, lv: 5 },  // Blood Affinity mastery - +10 HealPower/lv
-      { id: 211, lv: 5 },  // Light Affinity mastery - +3% venom magic power, +3 dark resist/lv
-      { id: 207, lv: 5 },  // Earth Affinity mastery - +3% fire magic power, +3 pierce resist/lv
-      { id: 206, lv: 5 },  // Death Affinity (Necromancy) mastery - +3 magic DR/lv
-      // Sub-talents
-      { id: 49, lv: 3 },   // Deterrent (Defender) - +10% armor per lv
-      { id: 51, lv: 3 },   // Heavy Armour Expert (Defender) - +10/lv heavy armor effectiveness. Req Armour 3.
-      { id: 52, lv: 3 },   // Unyielding (Defender) - Death prevention, heals 10/lv%, CD 300s
-      { id: 50, lv: 3 },   // Heart of Beast (Defender) - +0.5 leadership/lv
-      { id: 105, lv: 3 },  // DeathResist (Berserker) - 2nd death prevention, +1/lv heal, CD 300s
-      { id: 148, lv: 3 },  // Mortify (Battlemonk) - +5 magic DR/lv, +4% carry
-      { id: 178, lv: 3 },  // Bloodthirsty (Shapeshifter) - +10% life leech per lv
-      { id: 181, lv: 3 },  // ThickFur (Shapeshifter) - +4 ALL resists per lv (9 types)
-      { id: 19, lv: 3 },   // Kill Desire (Fighter) - +10+10/lv dmg buff on being hit
-      { id: 106, lv: 3 },  // Hamstring (Berserker) - 3+2/lv% slow on hit, 75% for 2s
-      // Weapon passives (TwoHand/Mace)
-      { id: 68, lv: 3 },   // Overwhelming - weapon force bonus
-      { id: 3, lv: 3 },    // Wild Sweep - cleave bonus
-      { id: 1, lv: 3 },    // Reaper's Cleave - +4+4/lv AoE bleed
-      { id: 2, lv: 3 },    // LethalStrike - +4% spell dmg/lv
+      // Defender
+      { id: 48, lv: 5 },   // Defender mastery — +2/lv Slash/Pierce/Blunt resist (+10 each)
+      { id: 49, lv: 3 },   // Deterrent — +10%/lv armor effectiveness (+30%)
+      { id: 50, lv: 3 },   // Heart_Of_Beast — +0.5/lv Leadership
+      { id: 51, lv: 3 },   // Heavy_Armour_Expert — +10/lv DR in heavy plate (+30)
+      { id: 52, lv: 3 },   // Unyielding — death prevention #1 (300s CD)
+      // Berserker
+      { id: 104, lv: 5 },  // Berserker mastery — +20%/lv attack speed on rage
+      { id: 105, lv: 3 },  // DeathResist — death prevention #2 (300s CD)
+      { id: 106, lv: 3 },  // Hamstring — 9% on-hit slow
+      { id: 107, lv: 3 },  // LethalChaser — +40 chase speed
+      { id: 108, lv: 3 },  // Torturer — +11 bleed per hit
+      // Battlemonk
+      { id: 146, lv: 5 },  // Battlemonk mastery — +1.0 phys/magic DR scaling
+      { id: 147, lv: 3 },  // InternalForce — +24 damage
+      { id: 148, lv: 3 },  // Mortify — +20 flat MagicDR
+      { id: 149, lv: 3 },  // QuickKick — +16 counter attack
+      { id: 150, lv: 3 },  // Resilience — +40% healing received
+      // Greatsword (Mace)
+      { id: 68, lv: 3 },   // Overwhelming
+      { id: 3, lv: 3 },    // Wild_Sweep
+      { id: 1, lv: 3 },    // Reaper's_Cleave — +16 cleave dmg
+      { id: 2, lv: 3 },    // LethalStrike — +16% spell dmg
     ],
     spells: [
-      // Battlemonk class spells
-      { id: 171 },  // EnergyShield - absorb 40+10/lv, CD 20s. Core shield #1.
-      { id: 170 },  // EnergyBurst - AoE 4+4/lv around self, CD 16s
-      { id: 168 },  // ChiHeal - AoE heal 9+9/lv, CD 30s
-      { id: 169 },  // EnergyBlast - ranged line 10+10/lv, CD 15s
-      { id: 172 },  // LandingAttack - jump AoE 85+15/lv%, CD 30s
-      // Defender class spells
-      { id: 68 },   // Fortress - +armor/block for 8s, CD 28s
-      { id: 70 },   // ImpairAttack - debuff enemy dmg, enhanced melee, CD 14s
-      { id: 67 },   // FocusBlock - +25+25/lv block stance, CD 5s
-      { id: 69 },   // Guardian - absorb ally dmg 20+10/lv%, CD 60s
-      { id: 19 },   // Intercept - dash to protect ally, CD 20s
-      // Commander class spells
-      { id: 21 },   // FirstAid - heal 12+12/lv over 6s, CD 30s
-      { id: 32 },   // Condemn - debuff -5-5/lv, CD 15s
-      { id: 43 },   // Stimulate - buff ally +10+10/lv dmg, CD 15s
-      { id: 24 },   // WarRoar - AoE morale +5+5/lv, CD 24s
-      { id: 34 },   // WarBanner - summon aura banner, CD 30s
-      { id: 36 },   // Rescue - revive ally, CD 60s
-      // Berserker class spells
-      { id: 128 },  // UnleashRage - +10/lv attack when HP>50%, CD 18s
-      { id: 127 },  // SuppressAnger - +1+1/lv DR when HP<50%, CD 18s
-      { id: 125 },  // HeadButt - stun 1.5+0.5/lv s, CD 12s
-      { id: 124 },  // Execute - 100+10/lv% wpn dmg, bonus vs low HP, CD 16s
-      // Rogue class spells
-      { id: 73 },   // EnvenomedWeapon - poison buff 2+1/lv, CD 25s. Mace OK.
-      { id: 72 },   // BlindingDust - blind CC, CD 15s
-      // Duelist class spells
-      { id: 55 },   // Challenge - taunt 2+2/lv s, CD 15s
-      { id: 57 },   // BreakFree - cleanse + DR, CD 14s
-      // Blood magic spells
-      { id: 312 },  // BloodShield - absorb 10+10/lv, CD 45s. Core shield #2.
-      { id: 313 },  // BloodThirstyWeapon - +3+2/lv life leech, CD 10s. Mace OK.
-      { id: 310 },  // BloodScourge - AoE bleed, CD 24s
-      { id: 309 },  // BloodReap - 75+25/lv% wpn chain, CD 35s
-      // White magic spells
-      { id: 194 },  // GlimmeringCloak - +5+5/lv armor, +10+5/lv magic DR, CD 25s
-      { id: 195 },  // HealingLight - heal 2+2/lv + regen, CD 18s
-      // Earth magic spells
-      { id: 285 },  // RockArmor - +25+15/lv armor, +10/lv resist, CD 35s
-      // Necromancy spells
-      { id: 242 },  // BoneArmor - absorb 20+25/lv, CD 30s. Core shield #3.
-      // Weapon skills (TwoHand/Mace)
-      { id: 4 },    // SpiralSlash - AoE 88+12/lv%, CD 8s
-      { id: 1 },    // ChargeAttack - gap closer 85+15/lv%, CD 13s
-      { id: 0 },    // ArmourCrash - -6-6/lv armor shred, CD 10s
-      { id: 2 },    // HiltStrike - stun 2+1/lv s, CD 12s
-      { id: 5 },    // TrioSlash - large AoE 60+10/lv%, CD 18s
-      { id: 3 },    // MightyGuard - defensive stance +5+5/lv block, CD 5s
+      { id: 3 },    // MightyGuard — TOGGLE, permanent +block/+defense
+      { id: 67 },   // FocusBlock — TOGGLE, permanent +100 block, +20 parry
+      { id: 4 },    // SpiralSlash — 124% AoE, 8s CD
+      { id: 0 },    // ArmourCrash — -24 armor shred, 10s CD
+      { id: 70 },   // ImpairAttack — 95% dmg + debuff enemy dmg -40, 14s CD
+      { id: 168 },  // ChiHeal — AoE heal, 30s CD
+      { id: 1 },    // ChargeAttack — 150% gap closer, 13s CD
     ],
     weaponMastery: [0, 0, 50, 0, 0, 0, 0],
-    books: [2273, 2271, 2275, 2272, 2279, 1119, 1267, 2082],
+    books: [2273, 2271, 2279],
   },
 
   // =========================================================================
-  // BUILD 2: ANNIHILATOR
-  // Maximum DPS burst and sustained. Fighter/Duelist/Rogue/Berserker core
-  // with ConcentrativeMode, BattleFuror, Execute chain. Blood weapon enchant.
+  // BUILD 2: BURST DESTROYER — Fighter + Duelist + Rogue + Ice/Lightning
+  // Script-optimized for AI button-mashing. All skills 8-15s CD, no duds.
+  // Fighter mastery +15% DmgIncrease always-on. ConcentrativeMode +35 flat.
+  // Cunning +16 flat melee. BackAttack 160%@9s = best DPS efficiency.
+  // Double weapon enchants (Frost+Charged) add elemental to every swing.
   // =========================================================================
-  // CLASS SPELLS INCLUDED (all verified Mace/heavy plate compatible):
-  //
-  // -- Gladiator/Fighter (SkillSet 1, RequireWeapon includes Mace) --
-  // [40]  PowerStrike      - Enhanced melee, CD 15s. 125+25/lv% weapon dmg, 50% armor pen.
-  // [23]  WhirlwindAttack  - AoE spin, CD 30s. 40+20/lv% weapon dmg. Ultimate AoE.
-  // [45]  BattleFuror      - Self buff, CD 20s, 10 MP. +2/lv dmg, +1/lv speed for 7s.
-  // [31]  DashAttack       - Charge through, CD 22s, 15 MP. 8+8/lv dmg, stun 1.5s.
-  // [12]  KickDown         - Knockdown, CD 15s, 16 MP. Stun 1+0.5/lv s, 10+5/lv force.
-  //
-  // -- Duelist (SkillSet 4, RequireWeapon includes Mace) --
-  // [59]  PrecisionStrike  - Enhanced melee, CD 18s. 100+20/lv% weapon dmg. Pure single-target.
-  // [25]  Disarm           - Enhanced melee, CD 16s. Disarm 1+1/lv s, 40% force, 100% armor pen.
-  // [56]  ConcentrativeMode - Toggle stance, CD 5s. +30% hit chance, +5+10/lv weapon dmg.
-  // [55]  Challenge        - Taunt, CD 15s, 10 MP. Forced aggro 2+2/lv s.
-  // [54]  AdvancedDodge    - Reactive dodge, CD 5s. 4-1/lv s enhanced dodge. No weapon req.
-  // [57]  BreakFree        - Cleanse, CD 14s. Remove debuffs + DR buff.
-  //
-  // -- Rogue (SkillSet 5, RequireWeapon includes Mace for some) --
-  // [74]  BackAttack       - Teleport behind + strike, CD 9s. 100+20/lv% weapon dmg.
-  // [75]  PainSpotAttack   - Enhanced melee, CD 16s. 15+10/lv bonus dmg, 8s bleed.
-  // [73]  EnvenomedWeapon  - Poison buff, CD 25s. +2+1/lv poison dmg per hit for 15s.
-  // [72]  BlindingDust     - Blind CC, CD 15s, 5 MP. 2+2/lv blind debuff.
-  // [58]  Evasion          - Dodge buff, CD 20s, 9 MP. +20+20/lv dodge for 5s.
-  //
-  // -- Berserker (SkillSet 7, RequireWeapon includes Mace) --
-  // [124] Execute          - Enhanced melee, CD 16s. 100+10/lv% wpn dmg, +20+20/lv vs <33% HP.
-  // [128] UnleashRage      - Self buff, CD 18s. +10/lv attack power for 15s when HP>50%.
-  // [126] RecklessPosture  - Toggle, CD 5s, 1 MP/s. +6+6/lv attack, -25% defense. Glass cannon.
-  // [125] HeadButt         - Stun, CD 12s, 15 MP. 25+25/lv force, 1.5+0.5/lv s stun.
-  //
-  // -- Blood Magic (SkillSet 109) --
-  // [313] BloodThirstyWeapon - +3+2/lv life leech, CD 10s. Sustain via damage.
-  // [311] BloodSeethe      - 10+5/lv dmg + 20+10/lv bleed, CD 24s.
-  //
-  // WEAPON SKILLS (SkillSet 202 = Mace/TwoHand):
-  // [4]  SpiralSlash, [1] ChargeAttack, [0] ArmourCrash,
-  // [2]  HiltStrike, [5] TrioSlash, [3] MightyGuard
   {
-    name: 'Annihilator',
-    description: 'Maximum burst DPS. PowerStrike 125+25/lv% + Execute bonus vs low HP + WhirlwindAttack AoE. ConcentrativeMode +5+10/lv flat weapon dmg, BattleFuror +2/lv dmg steroid, RecklessPosture +6+6/lv attack. BackAttack teleport-strike for repositioning. 27 active abilities.',
-    skillSets: [1, 4, 5, 7, 109],
+    name: 'Burst Destroyer',
+    description: 'AI-mash optimized. Fighter mastery (+15% dmg always-on) + ConcentrativeMode toggle (+35 flat wpn dmg) + Cunning (+16 flat melee). All 6 damage skills at 8-15s CDs — no dead buttons. Double weapon enchants (FrostWeapon + ChargedWeapons) add elemental to every swing including autos. BackAttack 160% at 9s CD = best DPS/CD in game.',
+    skillSets: [1, 4, 5, 102, 103],
     talents: [
-      // Mastery nodes
-      { id: 18, lv: 5 },   // Fighter mastery
-      { id: 40, lv: 5 },   // Duelist mastery - +3/lv weapon dmg
-      { id: 56, lv: 5 },   // Rogue mastery - +5/lv crit damage
-      { id: 104, lv: 5 },  // Berserker mastery - rage attack speed
-      { id: 216, lv: 5 },  // Blood Affinity - +10 HealPower/lv (sustain via leech)
-      // Sub-talents
-      { id: 53, lv: 3 },   // Cunning (Rogue) - +4+4/lv flat melee damage
-      { id: 19, lv: 3 },   // Kill Desire (Fighter) - +10+10/lv dmg buff on being hit, Mace OK
-      { id: 21, lv: 3 },   // Multi Weapon Master (Fighter) - +30/lv weapon swap speed, +25+25/lv
-      { id: 43, lv: 3 },   // Distance Attack (Fighter) - reduced engagement distance
-      { id: 41, lv: 3 },   // Expose Weakness (Duelist) - 1+1/lv armor pen for 16s
-      { id: 0, lv: 3 },    // Counter Cut (Duelist) - +10+5/lv counter dmg, Mace OK
-      { id: 107, lv: 3 },  // LethalChaser (Berserker) - +10+10/lv chase speed
-      { id: 106, lv: 3 },  // Hamstring (Berserker) - slow on hit, Mace OK
-      { id: 108, lv: 3 },  // Torturer (Berserker) - +2+3/lv bleed dmg, Mace OK
-      // Weapon passives (TwoHand/Mace)
+      // Fighter — +15% Damage Increase passive (Persuasion = DmgIncrease)
+      { id: 18, lv: 5 },   // Fighter mastery — +15% DmgIncrease (ALWAYS ON)
+      { id: 19, lv: 3 },   // Kill_Desire — +30% AtkSpeed, +15% MoveSpeed when hit
+      { id: 21, lv: 3 },   // Multi_Weapon_Master — +90 stamina dmg, +100 force
+      { id: 43, lv: 3 },   // Distance_Attack — +3.5 attack range
+      // Duelist — ConcentrativeMode toggle + stacking debuffs
+      { id: 40, lv: 5 },   // Duelist mastery — +15 flat weapon damage passive
+      { id: 42, lv: 3 },   // QuickStrafe — +45 attack speed
+      { id: 41, lv: 3 },   // ExposeWeakness — stacking armor pen on enemy
+      { id: 0, lv: 3 },    // Counter_Cut — +25 counter damage
+      // Rogue — Cunning flat dmg + BackAttack best DPS/CD + flank crits
+      { id: 56, lv: 5 },   // Rogue mastery — +25 crit damage
+      { id: 53, lv: 3 },   // Cunning — +16 flat MeleeDmg (ALWAYS ON)
+      { id: 57, lv: 3 },   // SurpriseAttack — +170% crit on flank
+      { id: 55, lv: 3 },   // LowProfile — minor armor bonus
+      // Magic Affinities
+      { id: 210, lv: 5 },  // IceAffinity — ice magic mastery
+      { id: 212, lv: 5 },  // LightningAffinity — lightning magic mastery
+      // Greatsword (Mace) — ALL passives boost damage
+      { id: 68, lv: 3 },   // Overwhelming — +32% CritDmg (Lockpick = CritDmg)
+      { id: 3, lv: 3 },    // Wild_Sweep — +25% LifeSteal (Medicine = LifeSteal)
+      { id: 1, lv: 3 },    // Reaper's_Cleave — +16% DmgIncrease proc
+      { id: 2, lv: 3 },    // LethalStrike — +16% SpellDmg
+    ],
+    spells: [
+      { id: 56 },   // ConcentrativeMode — TOGGLE, +35 flat weapon dmg permanent
+      { id: 39 },   // FrostWeapon — enchant, +25 cold dmg per hit, 26s/26s (100%)
+      { id: 77 },   // ChargedWeapons — enchant, +12 lightning per hit, 25s/25s (100%)
+      { id: 40 },   // PowerStrike — 200% weapon multiplier, 15s CD (THE NUKE)
+      { id: 74 },   // BackAttack — 160% teleport strike, 9s CD (best DPS efficiency)
+      { id: 4 },    // SpiralSlash — 124% AoE, 8s CD (bread & butter)
+      { id: 0 },    // ArmourCrash — -24 armor shred on enemy, 10s CD
+      { id: 1 },    // ChargeAttack — 150% gap closer, 13s CD
+    ],
+    weaponMastery: [0, 0, 50, 0, 0, 0, 0],
+    books: [2275, 2274, 2278, 1193, 1194],
+  },
+
+  // =========================================================================
+  // BUILD 3: BALANCED HYBRID — Tank + Magic Buffs
+  // Defender + Berserker + Battlemonk + Blood/Light/Necro magic layers.
+  // =========================================================================
+  {
+    name: 'Balanced Hybrid',
+    description: 'Tank + magic buff layers. MightyGuard toggle + BloodThirstyWeapon (100% uptime leech) + GlimmeringCloak (80% uptime resists) + BoneArmor (67% absorb shield). 2 death saves. AI cycles 5 spells after toggle. 7 spells.',
+    skillSets: [3, 7, 9, 104, 108, 109],
+    talents: [
+      // Defender
+      { id: 48, lv: 5 },   // Defender mastery — +10 Slash/Pierce/Blunt resist
+      { id: 49, lv: 3 },   // Deterrent — +30% armor
+      { id: 50, lv: 3 },   // Heart_Of_Beast — +1.5 Leadership
+      { id: 51, lv: 3 },   // Heavy_Armour_Expert — +30 DR heavy plate
+      { id: 52, lv: 3 },   // Unyielding — death prevention #1
+      // Berserker
+      { id: 104, lv: 5 },  // Berserker mastery — +1.0 atk speed on rage
+      { id: 105, lv: 3 },  // DeathResist — death prevention #2
+      { id: 106, lv: 3 },  // Hamstring — slow on hit
+      { id: 107, lv: 3 },  // LethalChaser — +40 chase speed
+      { id: 108, lv: 3 },  // Torturer — +11 bleed per hit
+      // Battlemonk
+      { id: 146, lv: 5 },  // Battlemonk mastery — +1.0 DR scaling
+      { id: 147, lv: 3 },  // InternalForce — +24 damage
+      { id: 148, lv: 3 },  // Mortify — +20 MagicDR
+      { id: 149, lv: 3 },  // QuickKick — +16 counter
+      { id: 150, lv: 3 },  // Resilience — +40% healing received
+      // Magic Affinities
+      { id: 216, lv: 5 },  // BloodAffinity — +50 HealPower
+      { id: 206, lv: 5 },  // DeathAffinity — +15 MagicDR
+      { id: 211, lv: 5 },  // LightAffinity — +15 Dark resist
+      // Greatsword (Mace)
       { id: 68, lv: 3 },   // Overwhelming
-      { id: 3, lv: 3 },    // Wild Sweep
-      { id: 1, lv: 3 },    // Reaper's Cleave
+      { id: 3, lv: 3 },    // Wild_Sweep
+      { id: 1, lv: 3 },    // Reaper's_Cleave
       { id: 2, lv: 3 },    // LethalStrike
     ],
     spells: [
-      // Fighter/Gladiator class spells
-      { id: 40 },   // PowerStrike - 125+25/lv% weapon dmg, CD 15s. Main nuke.
-      { id: 23 },   // WhirlwindAttack - AoE 40+20/lv%, CD 30s. Ultimate AoE.
-      { id: 45 },   // BattleFuror - +2/lv dmg, +1/lv speed, CD 20s
-      { id: 31 },   // DashAttack - charge 8+8/lv, stun, CD 22s
-      { id: 12 },   // KickDown - knockdown 1+0.5/lv s, CD 15s
-      // Duelist class spells
-      { id: 59 },   // PrecisionStrike - 100+20/lv% pure dmg, CD 18s
-      { id: 25 },   // Disarm - disarm + 100% armor pen, CD 16s
-      { id: 56 },   // ConcentrativeMode - +5+10/lv weapon dmg toggle, CD 5s
-      { id: 55 },   // Challenge - taunt, CD 15s
-      { id: 54 },   // AdvancedDodge - reactive dodge, CD 5s
-      { id: 57 },   // BreakFree - cleanse + DR, CD 14s
-      // Rogue class spells
-      { id: 74 },   // BackAttack - teleport strike 100+20/lv%, CD 9s
-      { id: 75 },   // PainSpotAttack - 15+10/lv bonus, bleed, CD 16s. Mace OK.
-      { id: 73 },   // EnvenomedWeapon - poison buff, CD 25s. Mace OK.
-      { id: 72 },   // BlindingDust - blind CC, CD 15s
-      { id: 58 },   // Evasion - dodge buff, CD 20s
-      // Berserker class spells
-      { id: 124 },  // Execute - 100+10/lv%, bonus vs low HP, CD 16s
-      { id: 128 },  // UnleashRage - +10/lv attack, CD 18s
-      { id: 126 },  // RecklessPosture - +6+6/lv attack toggle, CD 5s
-      { id: 125 },  // HeadButt - stun, CD 12s
-      // Blood magic
-      { id: 313 },  // BloodThirstyWeapon - life leech, CD 10s
-      { id: 311 },  // BloodSeethe - 10+5/lv + bleed, CD 24s
-      // Weapon skills (TwoHand/Mace)
-      { id: 4 },    // SpiralSlash - AoE 88+12/lv%, CD 8s
-      { id: 1 },    // ChargeAttack - gap closer, CD 13s
-      { id: 0 },    // ArmourCrash - armor shred, CD 10s
-      { id: 2 },    // HiltStrike - stun, CD 12s
-      { id: 5 },    // TrioSlash - large AoE, CD 18s
-      { id: 3 },    // MightyGuard - block stance, CD 5s
+      { id: 3 },    // MightyGuard — TOGGLE, permanent +block/+defense
+      { id: 313 },  // BloodThirstyWeapon — life leech, 20s/10s CD (100% uptime)
+      { id: 194 },  // GlimmeringCloak — +armor/+magic DR, 20s/25s (80% uptime)
+      { id: 242 },  // BoneArmor — absorb shield, 20s/30s (67% uptime)
+      { id: 4 },    // SpiralSlash — 124% AoE, 8s CD
+      { id: 0 },    // ArmourCrash — -24 armor shred, 10s CD
+      { id: 168 },  // ChiHeal — AoE heal, 30s CD
     ],
     weaponMastery: [0, 0, 50, 0, 0, 0, 0],
-    books: [2278, 2274, 2276, 2275],
+    books: [2273, 2271, 2279, 1267, 2006, 2414],
   },
 
   // =========================================================================
-  // BUILD 3: UNDYING WARLORD
-  // Summons + melee + commander auras. Skeleton army + Golem + Corpses
-  // with Commander buffs amplifying everything. Necromancy + Forest + Blood.
+  // BUILD 4: SUMMONER WARLORD — Commander auras + 4 summons
+  // Commander + Defender + Berserker + Necro/Blood/Earth summons.
   // =========================================================================
-  // CLASS SPELLS INCLUDED:
-  //
-  // -- Commander (SkillSet 2, no weapon requirement) --
-  // [21]  FirstAid, [32] Condemn, [43] Stimulate, [24] WarRoar,
-  // [34]  WarBanner, [36] Rescue
-  //
-  // -- Defender (SkillSet 3, RequireWeapon includes Mace) --
-  // [68]  Fortress, [70] ImpairAttack, [67] FocusBlock,
-  // [69]  Guardian, [19] Intercept
-  //
-  // -- Berserker (SkillSet 7, RequireWeapon includes Mace) --
-  // [128] UnleashRage, [127] SuppressAnger, [125] HeadButt, [124] Execute
-  //
-  // -- Necromancy Magic (SkillSet 108, no weapon req) --
-  // [257] SummonSkeletonWarrior - Summon melee skeleton, CD 120s, 40 MP + 40 occupy.
-  // [256] SummonSkeletonArcher  - Summon ranged skeleton, CD 120s, 40 MP + 40 occupy.
-  // [255] SummonCorpse          - Summon corpse bomb, CD 60s, 30 MP + 30 occupy.
-  // [258] SummonVengefulGhost   - Summon ghost, CD 180s, 75 MP + 75 occupy.
-  // [242] BoneArmor             - Self shield 20+25/lv, CD 30s.
-  // [253] EvilHaunt             - Debuff 2+2/lv + 15+15/lv DoT, CD 18s.
-  // [254] SpiritForm            - Self buff +12/lv, CD 40s.
-  // [243] DrainSoul             - Life drain 16+8/lv, CD 42s.
-  //
-  // -- Blood Magic (SkillSet 109) --
-  // [312] BloodShield, [313] BloodThirstyWeapon, [310] BloodScourge
-  //
-  // -- Earth Magic (SkillSet 111) --
-  // [293] SummonGolem    - Tanky summon, CD 150s, 50 MP + 50 occupy.
-  // [285] RockArmor      - Self armor buff.
-  // [286] RockSpikes     - Line AoE 4+4/lv, CD 26s.
-  //
-  // WEAPON SKILLS: [4] SpiralSlash, [1] ChargeAttack, [0] ArmourCrash,
-  //                [2] HiltStrike, [5] TrioSlash, [3] MightyGuard
   {
-    name: 'Undying Warlord',
-    description: 'Summons + melee + commander auras. Skeleton Warriors/Archers + Corpses + Golem + Ghost army buffed by WarBanner/WarRoar/Stimulate auras. Power_In_Numbers scales with summon count. BoneArmor + BloodShield + RockArmor triple defense layers. 35 active abilities.',
+    name: 'Summoner Warlord',
+    description: 'Frontline + summon army. 4 summons (Skeleton Warrior/Archer + Golem + Ghost) cast once, then leave rotation. Power_In_Numbers gives +4 dmg per ally (+16 with 4 summons). MightyGuard toggle + BoneArmor shield + leech. 8 spells.',
     skillSets: [2, 3, 7, 108, 109, 111],
     talents: [
-      // Mastery nodes
-      { id: 8, lv: 5 },    // Commander mastery - +20% aura radius
-      { id: 48, lv: 5 },   // Defender mastery - +2 phys resist/lv
-      { id: 104, lv: 5 },  // Berserker mastery - rage attack speed
-      { id: 206, lv: 5 },  // Death Affinity (Necromancy) - +3 magic DR/lv
-      { id: 216, lv: 5 },  // Blood Affinity - +10 HealPower/lv
-      { id: 207, lv: 5 },  // Earth Affinity - +3% fire magic, +3 pierce resist/lv
-      // Sub-talents
-      { id: 10, lv: 3 },   // Power_In_Numbers (Commander) - +1+1/lv dmg per nearby ally
-      { id: 9, lv: 3 },    // Harasser (Commander) - +5+5/lv debuff on hit, 10s
-      { id: 11, lv: 3 },   // Revenge Fire (Commander) - +6+6/lv counter damage
-      { id: 49, lv: 3 },   // Deterrent (Defender) - +10% armor
-      { id: 51, lv: 3 },   // Heavy Armour Expert (Defender) - heavy armor bonus. Req Armour 3.
-      { id: 52, lv: 3 },   // Unyielding (Defender) - death prevention
-      { id: 105, lv: 3 },  // DeathResist (Berserker) - 2nd death prevention
-      { id: 178, lv: 3 },  // Bloodthirsty (Shapeshifter) - life leech
-      { id: 181, lv: 3 },  // ThickFur (Shapeshifter) - +4 all resists/lv
-      // Weapon passives
+      // Commander
+      { id: 8, lv: 5 },    // Commander mastery — aura buff to allies
+      { id: 10, lv: 3 },   // Power_In_Numbers — +4/ally damage (+16 w/4 summons)
+      { id: 9, lv: 3 },    // Harasser — +20 debuff on hit, 10s
+      { id: 11, lv: 3 },   // Revenge_Fire — +24 counter damage
+      // Defender
+      { id: 48, lv: 5 },   // Defender mastery — +10 Slash/Pierce/Blunt resist
+      { id: 49, lv: 3 },   // Deterrent — +30% armor
+      { id: 50, lv: 3 },   // Heart_Of_Beast — +1.5 Leadership
+      { id: 51, lv: 3 },   // Heavy_Armour_Expert — +30 DR heavy plate
+      { id: 52, lv: 3 },   // Unyielding — death prevention #1
+      // Berserker
+      { id: 104, lv: 5 },  // Berserker mastery — +1.0 atk speed on rage
+      { id: 105, lv: 3 },  // DeathResist — death prevention #2
+      { id: 106, lv: 3 },  // Hamstring — slow on hit
+      { id: 107, lv: 3 },  // LethalChaser — +40 chase speed
+      { id: 108, lv: 3 },  // Torturer — +11 bleed per hit
+      // Magic Affinities
+      { id: 206, lv: 5 },  // DeathAffinity — +15 MagicDR
+      { id: 207, lv: 5 },  // EarthAffinity — +15 Pierce resist
+      { id: 216, lv: 5 },  // BloodAffinity — +50 HealPower
+      // Greatsword (Mace)
       { id: 68, lv: 3 },   // Overwhelming
-      { id: 3, lv: 3 },    // Wild Sweep
-      { id: 1, lv: 3 },    // Reaper's Cleave
+      { id: 3, lv: 3 },    // Wild_Sweep
+      { id: 1, lv: 3 },    // Reaper's_Cleave
       { id: 2, lv: 3 },    // LethalStrike
     ],
     spells: [
-      // Commander class spells
-      { id: 21 },   // FirstAid - heal, CD 30s
-      { id: 32 },   // Condemn - debuff, CD 15s
-      { id: 43 },   // Stimulate - buff ally/summons, CD 15s
-      { id: 24 },   // WarRoar - AoE morale, CD 24s
-      { id: 34 },   // WarBanner - aura banner buffs summons, CD 30s
-      { id: 36 },   // Rescue - revive ally, CD 60s
-      // Defender class spells
-      { id: 68 },   // Fortress - armor/block, CD 28s
-      { id: 70 },   // ImpairAttack - debuff melee, CD 14s
-      { id: 67 },   // FocusBlock - block stance, CD 5s
-      { id: 69 },   // Guardian - ally shield, CD 60s
-      { id: 19 },   // Intercept - dash protect, CD 20s
-      // Berserker class spells
-      { id: 128 },  // UnleashRage - attack buff, CD 18s
-      { id: 127 },  // SuppressAnger - DR when low HP, CD 18s
-      { id: 125 },  // HeadButt - stun, CD 12s
-      { id: 124 },  // Execute - finisher, CD 16s
-      // Necromancy summons & spells
-      { id: 257 },  // SummonSkeletonWarrior - melee summon, CD 120s
-      { id: 256 },  // SummonSkeletonArcher - ranged summon, CD 120s
-      { id: 255 },  // SummonCorpse - corpse bomb summon, CD 60s
-      { id: 258 },  // SummonVengefulGhost - ghost summon, CD 180s
-      { id: 242 },  // BoneArmor - self shield, CD 30s
-      { id: 253 },  // EvilHaunt - debuff + DoT, CD 18s
-      { id: 254 },  // SpiritForm - self buff, CD 40s
-      { id: 243 },  // DrainSoul - life drain, CD 42s
-      // Blood magic
-      { id: 312 },  // BloodShield - absorb shield, CD 45s
-      { id: 313 },  // BloodThirstyWeapon - life leech buff, CD 10s
-      { id: 310 },  // BloodScourge - AoE bleed, CD 24s
-      // Earth magic
-      { id: 293 },  // SummonGolem - tanky summon, CD 150s
-      { id: 285 },  // RockArmor - self armor buff, CD 35s
-      { id: 286 },  // RockSpikes - line AoE, CD 26s
-      // Weapon skills (TwoHand/Mace)
-      { id: 4 },    // SpiralSlash - AoE, CD 8s
-      { id: 1 },    // ChargeAttack - gap closer, CD 13s
-      { id: 0 },    // ArmourCrash - armor shred, CD 10s
-      { id: 2 },    // HiltStrike - stun, CD 12s
-      { id: 5 },    // TrioSlash - large AoE, CD 18s
-      { id: 3 },    // MightyGuard - block stance, CD 5s
+      { id: 3 },    // MightyGuard — TOGGLE, permanent +block/+parry
+      { id: 257 },  // SummonSkeletonWarrior — melee summon, 120s CD
+      { id: 256 },  // SummonSkeletonArcher — ranged summon, 120s CD
+      { id: 293 },  // SummonGolem — tank summon, 150s CD
+      { id: 258 },  // SummonVengefulGhost — magic summon, 180s CD
+      { id: 242 },  // BoneArmor — absorb shield, 20s/30s (67% uptime)
+      { id: 313 },  // BloodThirstyWeapon — life leech, 20s/10s
+      { id: 4 },    // SpiralSlash — 124% AoE, 8s CD
     ],
     weaponMastery: [0, 0, 50, 0, 0, 0, 0],
-    books: [2272, 2273, 2006, 2083],
-  },
-
-  // =========================================================================
-  // BUILD 4: PURE MARTIAL
-  // No magic, all combat classes stacked. Fighter/Commander/Defender/Duelist/
-  // Rogue/Berserker/Ronin/Battlemonk. Maximum class spell coverage.
-  // =========================================================================
-  // CLASS SPELLS INCLUDED (all verified Mace/heavy plate compatible):
-  //
-  // -- Fighter/Gladiator (SkillSet 1) --
-  // [40] PowerStrike, [23] WhirlwindAttack, [45] BattleFuror,
-  // [31] DashAttack, [12] KickDown
-  //
-  // -- Commander (SkillSet 2) --
-  // [21] FirstAid, [32] Condemn, [43] Stimulate, [24] WarRoar,
-  // [34] WarBanner, [36] Rescue
-  //
-  // -- Defender (SkillSet 3) --
-  // [68] Fortress, [70] ImpairAttack, [67] FocusBlock,
-  // [69] Guardian, [19] Intercept
-  //
-  // -- Duelist (SkillSet 4) --
-  // [59] PrecisionStrike, [25] Disarm, [56] ConcentrativeMode,
-  // [55] Challenge, [54] AdvancedDodge, [57] BreakFree
-  //
-  // -- Rogue (SkillSet 5) --
-  // [74] BackAttack, [75] PainSpotAttack, [73] EnvenomedWeapon,
-  // [72] BlindingDust, [58] Evasion
-  //
-  // -- Berserker (SkillSet 7) --
-  // [124] Execute, [128] UnleashRage, [126] RecklessPosture,
-  // [127] SuppressAnger, [125] HeadButt
-  //
-  // -- Ronin (SkillSet 10, many have no weapon req) --
-  // [185] Shuriken        - Ranged attack, CD 6s, 12 MP. 5+5/lv dmg. No weapon req.
-  // [184] Caltrops         - Ground trap, CD 25s. Slow 75%, 1+1/lv dmg. No weapon req.
-  // [187] Untouchable      - Self buff, CD 30s. 2+1/lv dodge, 50% melee/ranged avoid. No weapon req.
-  // [186] SmokePill        - AoE smoke, CD 30s. Invis 1s, blind 2+1/lv s. No weapon req.
-  // NOTE: CrossSlash/IaidoSlash/MeteorSlash require WeaponClass 22/49 (katana types) - EXCLUDED
-  //
-  // -- Battlemonk (SkillSet 9, RequireWeapon includes Mace) --
-  // [171] EnergyShield, [170] EnergyBurst, [169] EnergyBlast,
-  // [168] ChiHeal, [172] LandingAttack
-  //
-  // WEAPON SKILLS: all 6 TwoHand skills
-  {
-    name: 'Pure Martial',
-    description: 'No magic required. 8 combat classes stacked: Fighter, Commander, Defender, Duelist, Rogue, Berserker, Ronin, Battlemonk. Double death prevention (Unyielding + DeathResist), ConcentrativeMode +5+10/lv weapon dmg, Cunning +4+4/lv melee, EnergyShield + Fortress defense. 42 active class abilities + 6 weapon skills.',
-    skillSets: [1, 2, 3, 4, 5, 7, 9, 10],
-    talents: [
-      // Mastery nodes
-      { id: 18, lv: 5 },   // Fighter mastery
-      { id: 8, lv: 5 },    // Commander mastery
-      { id: 48, lv: 5 },   // Defender mastery
-      { id: 40, lv: 5 },   // Duelist mastery - +3/lv weapon dmg
-      { id: 56, lv: 5 },   // Rogue mastery - +5/lv crit
-      { id: 104, lv: 5 },  // Berserker mastery - rage speed
-      { id: 204, lv: 5 },  // Ronin mastery - +2 phys/magic DR/lv
-      { id: 146, lv: 5 },  // Battlemonk mastery - +20% DR scaling
-      // Sub-talents
-      { id: 53, lv: 3 },   // Cunning (Rogue) - +4+4/lv flat melee dmg
-      { id: 52, lv: 3 },   // Unyielding (Defender) - death prevention #1
-      { id: 105, lv: 3 },  // DeathResist (Berserker) - death prevention #2
-      { id: 49, lv: 3 },   // Deterrent (Defender) - +10% armor
-      { id: 51, lv: 3 },   // Heavy Armour Expert (Defender) - heavy armor bonus
-      { id: 19, lv: 3 },   // Kill Desire (Fighter) - dmg on being hit, Mace OK
-      { id: 41, lv: 3 },   // Expose Weakness (Duelist) - armor pen
-      { id: 106, lv: 3 },  // Hamstring (Berserker) - slow on hit, Mace OK
-      { id: 148, lv: 3 },  // Mortify (Battlemonk) - +5 magic DR/lv
-      { id: 176, lv: 3 },  // Arbitrariness (Ronin) - +10+10/lv dmg. Req Mace OK.
-      { id: 177, lv: 3 },  // DeflectArrows (Ronin) - +5+5/lv missile deflect. Req Mace OK.
-      { id: 10, lv: 3 },   // Power_In_Numbers (Commander) - +1+1/lv per ally
-      // Weapon passives
-      { id: 68, lv: 3 },   // Overwhelming
-      { id: 3, lv: 3 },    // Wild Sweep
-      { id: 1, lv: 3 },    // Reaper's Cleave
-      { id: 2, lv: 3 },    // LethalStrike
-    ],
-    spells: [
-      // Fighter/Gladiator class spells
-      { id: 40 },   // PowerStrike - 125+25/lv%, CD 15s
-      { id: 23 },   // WhirlwindAttack - AoE spin, CD 30s
-      { id: 45 },   // BattleFuror - dmg/speed buff, CD 20s
-      { id: 31 },   // DashAttack - charge stun, CD 22s
-      { id: 12 },   // KickDown - knockdown, CD 15s
-      // Commander class spells
-      { id: 21 },   // FirstAid - heal, CD 30s
-      { id: 32 },   // Condemn - debuff, CD 15s
-      { id: 43 },   // Stimulate - buff, CD 15s
-      { id: 24 },   // WarRoar - AoE morale, CD 24s
-      { id: 34 },   // WarBanner - aura, CD 30s
-      { id: 36 },   // Rescue - revive, CD 60s
-      // Defender class spells
-      { id: 68 },   // Fortress - armor/block, CD 28s
-      { id: 70 },   // ImpairAttack - debuff melee, CD 14s
-      { id: 67 },   // FocusBlock - block stance, CD 5s
-      { id: 69 },   // Guardian - ally shield, CD 60s
-      { id: 19 },   // Intercept - dash protect, CD 20s
-      // Duelist class spells
-      { id: 59 },   // PrecisionStrike - 100+20/lv%, CD 18s
-      { id: 25 },   // Disarm - disarm + armor pen, CD 16s
-      { id: 56 },   // ConcentrativeMode - +weapon dmg toggle, CD 5s
-      { id: 55 },   // Challenge - taunt, CD 15s
-      { id: 54 },   // AdvancedDodge - reactive dodge, CD 5s
-      { id: 57 },   // BreakFree - cleanse, CD 14s
-      // Rogue class spells
-      { id: 74 },   // BackAttack - teleport strike, CD 9s
-      { id: 75 },   // PainSpotAttack - bleed strike, CD 16s
-      { id: 73 },   // EnvenomedWeapon - poison buff, CD 25s
-      { id: 72 },   // BlindingDust - blind CC, CD 15s
-      { id: 58 },   // Evasion - dodge buff, CD 20s
-      // Berserker class spells
-      { id: 124 },  // Execute - finisher, CD 16s
-      { id: 128 },  // UnleashRage - attack buff, CD 18s
-      { id: 126 },  // RecklessPosture - attack toggle, CD 5s
-      { id: 127 },  // SuppressAnger - DR when low HP, CD 18s
-      { id: 125 },  // HeadButt - stun, CD 12s
-      // Ronin class spells (no weapon req)
-      { id: 185 },  // Shuriken - ranged 5+5/lv, CD 6s. No weapon req.
-      { id: 184 },  // Caltrops - ground trap, CD 25s. No weapon req.
-      { id: 187 },  // Untouchable - dodge self-buff, CD 30s. No weapon req.
-      { id: 186 },  // SmokePill - AoE smoke/invis, CD 30s. No weapon req.
-      // Battlemonk class spells (Mace compatible)
-      { id: 171 },  // EnergyShield - absorb shield, CD 20s
-      { id: 170 },  // EnergyBurst - AoE blast, CD 16s
-      { id: 169 },  // EnergyBlast - ranged blast, CD 15s
-      { id: 168 },  // ChiHeal - AoE heal, CD 30s
-      { id: 172 },  // LandingAttack - jump AoE, CD 30s
-      // Weapon skills (TwoHand/Mace)
-      { id: 4 },    // SpiralSlash - AoE, CD 8s
-      { id: 1 },    // ChargeAttack - gap closer, CD 13s
-      { id: 0 },    // ArmourCrash - armor shred, CD 10s
-      { id: 2 },    // HiltStrike - stun, CD 12s
-      { id: 5 },    // TrioSlash - large AoE, CD 18s
-      { id: 3 },    // MightyGuard - block stance, CD 5s
-    ],
-    weaponMastery: [0, 0, 50, 0, 0, 0, 0],
-    books: [2275, 2272, 2273, 2271, 2278, 2274, 2276],
+    books: [2272, 2273, 2271, 2006, 2414, 2082],
   },
 ];
-
 // =====================================================================
 // FILE HANDLING
 // =====================================================================
@@ -1496,60 +1169,32 @@ function renderBuildsTab(npc, idx) {
 function applyBuildPreset(npcIdx, buildIndex) {
   const preset = BUILD_PRESETS[buildIndex];
   if (!preset) return;
-  if (!confirm('Apply "' + preset.name + '" build?\n\nThis adds skillSets, talents, spells, weapon mastery, and class books.\nExisting entries are updated, not duplicated.')) return;
+  if (!confirm('Apply "' + preset.name + '" build?\n\nThis REPLACES all skillSets, talents, spells, and weapon mastery.\nPrevious build data will be overwritten.')) return;
 
   const npc = saveData.npcs[npcIdx];
 
-  // 1. SkillSets
-  if (!npc.skillSet) npc.skillSet = [];
-  for (const ss of preset.skillSets) {
-    if (!npc.skillSet.includes(ss)) {
-      npc.skillSet.push(ss);
-      changeCount++;
-      trackedOriginals['npc.' + npc.id + '.skillSet.add.' + ss] = null;
-    }
-  }
+  // 1. SkillSets — full replace
+  trackedOriginals['npc.' + npc.id + '.skillSet'] = JSON.stringify(npc.skillSet || []);
+  npc.skillSet = [...preset.skillSets];
+  changeCount++;
 
-  // 2. Talents (upsert)
-  if (!npc.talents) npc.talents = [];
-  for (const pt of preset.talents) {
-    const existing = npc.talents.find(t => t.id === pt.id);
-    if (existing) {
-      if (existing.lv < pt.lv) {
-        trackedOriginals['npc.' + npc.id + '.talents.' + pt.id + '.lv'] = existing.lv;
-        existing.lv = pt.lv;
-        changeCount++;
-      }
-    } else {
-      npc.talents.push({ id: pt.id, lv: pt.lv, cd: 0 });
-      changeCount++;
-      trackedOriginals['npc.' + npc.id + '.talents.add.' + pt.id] = null;
-    }
-  }
+  // 2. Talents — full replace
+  trackedOriginals['npc.' + npc.id + '.talents'] = JSON.stringify(npc.talents || []);
+  npc.talents = preset.talents.map(pt => ({ id: pt.id, lv: pt.lv, cd: 0 }));
+  changeCount++;
 
-  // 3. Spells (upsert)
-  if (!npc.spells) npc.spells = [];
-  for (const ps of preset.spells) {
-    const existing = npc.spells.find(s => s.id === ps.id);
-    if (!existing) {
-      npc.spells.push({ id: ps.id, lv: ps.lv || 3, cd: 0, isActivated: false });
-      changeCount++;
-      trackedOriginals['npc.' + npc.id + '.spells.add.' + ps.id] = null;
-    }
-  }
+  // 3. Spells — full replace
+  trackedOriginals['npc.' + npc.id + '.spells'] = JSON.stringify(npc.spells || []);
+  npc.spells = preset.spells.map(ps => ({ id: ps.id, lv: ps.lv || 3, cd: 0, isActivated: false }));
+  changeCount++;
 
-  // 4. Weapon mastery (only increase)
-  if (!npc.weaponMastery) npc.weaponMastery = [0,0,0,0,0,0,0];
-  if (!npc.weaponMasteryEXP) npc.weaponMasteryEXP = [0,0,0,0,0,0,0];
+  // 4. Weapon mastery — full replace
+  trackedOriginals['npc.' + npc.id + '.weaponMastery'] = JSON.stringify(npc.weaponMastery || []);
+  npc.weaponMastery = [...preset.weaponMastery];
+  npc.weaponMasteryEXP = preset.weaponMastery.map(v => v > 0 ? 999999 : 0);
   while (npc.weaponMastery.length < 7) npc.weaponMastery.push(0);
   while (npc.weaponMasteryEXP.length < 7) npc.weaponMasteryEXP.push(0);
-  for (let i = 0; i < preset.weaponMastery.length; i++) {
-    if (preset.weaponMastery[i] > npc.weaponMastery[i]) {
-      trackedOriginals['npc.' + npc.id + '.weaponMastery.' + i] = npc.weaponMastery[i];
-      npc.weaponMastery[i] = preset.weaponMastery[i];
-      changeCount++;
-    }
-  }
+  changeCount++;
 
   // 5. Books (add to inventory if not owned)
   if (preset.books && preset.books.length > 0) {
