@@ -1462,15 +1462,15 @@ input[type="number"]::-webkit-inner-spin-button {
   align-items: center;
   gap: 2px;
   margin-top: 0.2rem;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  height: 0;
-  overflow: hidden;
 }
 
-.icard:hover .icard-actions {
+.icard-rm {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.icard:hover .icard-rm {
   opacity: 1;
-  height: auto;
 }
 
 .icard-field {
