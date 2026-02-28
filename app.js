@@ -119,7 +119,7 @@ const BUILD_PRESETS = [
       { id: 1 },    // ChargeAttack — 150% gap closer, 13s CD
     ],
     weaponMastery: [0, 0, 50, 0, 0, 0, 0],
-    books: [2273, 2271, 2279],
+    books: [],
   },
 
   // =========================================================================
@@ -169,7 +169,7 @@ const BUILD_PRESETS = [
       { id: 1 },    // ChargeAttack — 150% gap closer, 13s CD
     ],
     weaponMastery: [0, 0, 50, 0, 0, 0, 0],
-    books: [2275, 2274, 2278, 1193, 1194],
+    books: [],
   },
 
   // =========================================================================
@@ -219,7 +219,7 @@ const BUILD_PRESETS = [
       { id: 168 },  // ChiHeal — AoE heal, 30s CD
     ],
     weaponMastery: [0, 0, 50, 0, 0, 0, 0],
-    books: [2273, 2271, 2279, 1267, 2006, 2414],
+    books: [],
   },
 
   // =========================================================================
@@ -269,7 +269,7 @@ const BUILD_PRESETS = [
       { id: 4 },    // SpiralSlash — 124% AoE, 8s CD
     ],
     weaponMastery: [0, 0, 50, 0, 0, 0, 0],
-    books: [2272, 2273, 2271, 2006, 2414, 2082],
+    books: [],
   },
 ];
 // =====================================================================
@@ -1173,9 +1173,9 @@ function applyBuildPreset(npcIdx, buildIndex) {
 
   const npc = saveData.npcs[npcIdx];
 
-  // 1. SkillSets — full replace
+  // 1. SkillSets — unlock ALL classes (combat + magic)
   trackedOriginals['npc.' + npc.id + '.skillSet'] = JSON.stringify(npc.skillSet || []);
-  npc.skillSet = [...preset.skillSets];
+  npc.skillSet = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,101,102,103,104,105,106,107,108,109,110,111];
   changeCount++;
 
   // 2. Talents — full replace
