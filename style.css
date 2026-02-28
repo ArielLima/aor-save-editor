@@ -1536,6 +1536,22 @@ input[type="number"]::-webkit-inner-spin-button {
   line-height: 1.5;
 }
 
+.tt-sprite-wrap {
+  text-align: center;
+  margin-bottom: 0.4rem;
+  padding: 0.3rem;
+  background: rgba(0,0,0,0.3);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.tt-sprite {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
 .tt-name {
   font-family: var(--font-display);
   font-size: 0.9rem;

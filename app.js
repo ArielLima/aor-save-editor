@@ -604,7 +604,13 @@ function itemTooltipHtml(id, item) {
 
   const tier = f.tier || 1;
   const tc = tierColor(tier);
-  let h = `<div class="tt-name" style="color:${tc}">${escHtml(f.name || itemName(id) || 'Unknown')}</div>`;
+  const sprite = spritePath(id);
+
+  let h = '';
+  if (sprite) {
+    h += `<div class="tt-sprite-wrap"><img class="tt-sprite" src="${sprite}" alt="" onerror="this.style.display='none'"></div>`;
+  }
+  h += `<div class="tt-name" style="color:${tc}">${escHtml(itemName(id) || f.name || 'Unknown')}</div>`;
   h += `<div class="tt-sub">${TIER_NAMES[tier] || 'T' + tier} &middot; ${f.category || '?'}`;
   if (f.EquipType) h += ` &middot; ${EQUIP_TYPES[f.EquipType] || 'Equip'}`;
   if (f.armourType) h += ` &middot; ${ARMOUR_TYPES[f.armourType] || ''} Armor`;
@@ -628,7 +634,7 @@ function itemTooltipHtml(id, item) {
     h += '<div class="tt-section">Damage Resistance</div>';
     const drNames = ['Slash', 'Pierce', 'Blunt', 'Fire', 'Cold', 'Light', 'Poison', 'Magic', 'Holy'];
     f.damageDR.forEach((v, i) => {
-      if (v > 0) h += `<div class="tt-row"><span>${drNames[i] || 'DR' + i}</span><span>${v}</span></div>`;
+      if (v > 0) h += `<div class="tt-row"><span>${drNames[i] || 'DR' + i}</span><span>${v}%</span></div>`;
     });
   }
 
@@ -649,7 +655,8 @@ function itemTooltipHtml(id, item) {
     h += '<div class="tt-section">Bonuses</div>';
     f.addAttrs.forEach(a => {
       const label = addonAttrName(a.type) || 'Attr #' + a.type;
-      h += `<div class="tt-row"><span>${escHtml(label)}</span><span>+${a.value}</span></div>`;
+      const val = Math.abs(a.value) < 1 ? (a.value * 100).toFixed(0) + '%' : a.value;
+      h += `<div class="tt-row"><span>${escHtml(label)}</span><span>+${val}</span></div>`;
     });
   }
 
@@ -659,7 +666,8 @@ function itemTooltipHtml(id, item) {
     item.addAttrs.forEach(a => {
       const attrType = a.type !== undefined ? a.type : a.id;
       const label = addonAttrName(attrType) || 'Attr #' + attrType;
-      h += `<div class="tt-row tt-enchant"><span>${escHtml(label)}</span><span>+${a.value}</span></div>`;
+      const val = Math.abs(a.value) < 1 ? (a.value * 100).toFixed(0) + '%' : a.value;
+      h += `<div class="tt-row tt-enchant"><span>${escHtml(label)}</span><span>+${val}</span></div>`;
     });
   }
 
