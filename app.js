@@ -504,15 +504,16 @@ const BUILD_PRESETS = [
   },
 
   // =========================================================================
-  // BUILD 7: DUAL WIELD BLENDER — Fastest possible auto-attacks
-  // Dual daggers (0.80 speed each) + every on-hit passive + attack speed buff.
-  // Pre-toggle stances, give AI zero or minimal spells. Pure auto-attack.
-  // Dual wield = 2 weapons = double on-hit proc rate.
+  // BUILD 7: DUAL WIELD BLENDER — Battle Mage + fastest auto-attacks
+  // Dual daggers (0.80 speed each) + every on-hit passive + elemental enchants.
+  // Pre-toggle RecklessPosture (+18% wpn dmg). AI has zero active spells.
+  // Fire/Ice/Lightning weapon enchants are AutoCast — free elemental DoTs.
+  // Dual wield = 2 weapons = double on-hit proc rate + double elemental procs.
   // =========================================================================
   {
     name: 'Dual Wield Blender',
-    description: 'Fastest auto-attacks in the game. Dual daggers (0.80 speed) with every on-hit passive stacked. Pre-toggle ConcentrativeMode before combat. AI has only 1-2 AoE spells so it mostly auto-attacks. Double on-hit procs: armor shred, damage amp, slow, bleed, lifesteal all trigger twice as fast as greatsword.',
-    skillSets: [1, 2, 4, 5, 7, 9, 11],
+    description: 'Battle mage blender. Dual daggers (0.80 speed) + triple elemental weapon enchants (fire/ice/lightning auto-cast, no AI turns wasted). Pre-toggle RecklessPosture (+18% wpn dmg) before combat. AI has zero active spells — pure auto-attack. Every hit procs: armor shred, damage amp, slow, bleed, lifesteal, fire DoT, ice DoT, lightning DoT.',
+    skillSets: [1, 2, 4, 5, 7, 9, 11, 101, 102, 103],
     talents: [
       // Fighter — always-on +15% damage
       { id: 18, lv: 5 },   // Fighter mastery — +15% DmgIncrease
@@ -554,13 +555,19 @@ const BUILD_PRESETS = [
       { id: 16, lv: 3 },   // Quick_Withdraw — +35 off-hand attack speed
       { id: 13, lv: 3 },   // Coherent_Slash — +8 combo hit bonus
       { id: 14, lv: 3 },   // GettingHandy — +9 dual wield damage
+      // Magic Affinities — needed for elemental weapon enchants
+      { id: 209, lv: 5 },  // FireAffinity
+      { id: 210, lv: 5 },  // IceAffinity
+      { id: 212, lv: 5 },  // LightningAffinity
     ],
     spells: [
-      // Pre-toggle stance (you activate before combat)
-      { id: 56 },   // ConcentrativeMode — TOGGLE, +35 flat weapon dmg permanent
-      // Minimal AI spells — mostly auto-attacks
-      { id: 73 },   // EnvenomedWeapon — venom DoT on hit, 15s/25s
-      { id: 168 },  // ChiHeal — emergency heal, 30s CD
+      // Pre-toggle stance (you activate before combat, AI ignores)
+      { id: 126 },  // RecklessPosture — TOGGLE, +18% weapon dmg, -25 phys resists (glass cannon)
+      // AutoCast weapon enchants — AI casts automatically, no turns wasted
+      { id: 49 },   // FlamingWeapons — fire DoT on every hit, 20s dur, 26s CD, AUTO-CAST
+      { id: 39 },   // FrostWeapon — cold DoT + slow on every hit, 20s dur, 26s CD, AUTO-CAST
+      { id: 77 },   // ChargedWeapons — lightning DoT on every hit, 20s dur, 26s CD, AUTO-CAST
+      // Zero active spells — AI just auto-attacks
     ],
     weaponMastery: [0, 0, 0, 0, 0, 50, 0],
     books: [],
