@@ -1944,3 +1944,28 @@ input[type="number"]::-webkit-inner-spin-button {
   float: right;
   margin-left: 1rem;
 }
+.version-tag:hover { opacity: 1; text-decoration: underline; }
+.changelog-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  z-index: 9999; display: flex; align-items: center; justify-content: center;
+}
+.changelog-modal {
+  background: var(--bg-dark, #1a1714); border: 1px solid var(--accent-gold, #c8a94e);
+  border-radius: 8px; padding: 1.5rem; max-width: 500px; width: 90%;
+  max-height: 70vh; overflow-y: auto; color: var(--text-primary, #e8dcc8);
+  font-family: var(--font-body, sans-serif);
+}
+.changelog-header {
+  font-size: 1.2rem; font-weight: bold; color: var(--accent-gold, #c8a94e);
+  border-bottom: 1px solid rgba(200,169,78,0.3); padding-bottom: 0.5rem; margin-bottom: 1rem;
+}
+.changelog-version {
+  font-weight: bold; font-size: 0.95rem; color: var(--accent-gold, #c8a94e);
+  margin-top: 0.8rem;
+}
+.changelog-date { font-weight: normal; font-size: 0.75rem; color: var(--text-muted, #888); margin-left: 0.5rem; }
+.changelog-list {
+  margin: 0.3rem 0 0.5rem 1.2rem; padding: 0; font-size: 0.8rem;
+  color: var(--text-secondary, #b8a88a); line-height: 1.5;
+}
+.changelog-list li { margin-bottom: 0.15rem; }

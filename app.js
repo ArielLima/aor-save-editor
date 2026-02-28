@@ -45,6 +45,46 @@ const SKILLS = [
   { key: 'torture',     bs: 'BSTorture',     label: 'Torture' },
 ];
 
+const APP_VERSION = 'v0.6.0';
+const CHANGELOG = [
+  { ver: 'v0.6.0', date: '2026-02-28', changes: [
+    'Fix food items being spoiled (-1 durability) when added to inventory',
+    'Build presets: weapon mastery is now additive (keeps existing mastery)',
+    'Add Dual Wield Blender build (battle mage w/ elemental auto-cast enchants)',
+    'Add Auto-Attack Berserker build (passive on-hit stacking)',
+  ]},
+  { ver: 'v0.5.0', date: '2026-02-28', changes: [
+    'Fix broken CSS from frontend refactor (unclosed brace)',
+    'Fix input field styling (.icard-field)',
+    'Fix scroll reset when adding/removing items',
+    'Legend items default to quality 5',
+    'Add version tag to UI',
+  ]},
+  { ver: 'v0.4.0', date: '2026-02-27', changes: [
+    'Visual inventory UI with item cards and sprites',
+    'Add 1,811 item sprite PNGs',
+    'Drag-and-drop from catalog to inventory',
+    'Split armor filters (Light/Medium/Heavy/Clothes)',
+    'Large sprite tooltips with stat breakdowns',
+  ]},
+  { ver: 'v0.3.0', date: '2026-02-27', changes: [
+    'Build presets system (Greatsword Master, Eternal Bulwark, Burst Destroyer, etc.)',
+    'Builds tab with one-click apply',
+    'Trait editor with full trait database',
+  ]},
+  { ver: 'v0.2.0', date: '2026-02-26', changes: [
+    'Character editor: stats, skills, talents, spells, weapon mastery',
+    'Multi-character support with sidebar',
+    'Change tracking with download bar',
+    'CSS redesign with RPG aesthetic',
+  ]},
+  { ver: 'v0.1.0', date: '2026-02-25', changes: [
+    'Initial release: load and edit sav.dat files',
+    'Save file location guide',
+    'Automatic backup on download',
+  ]},
+];
+
 const WEAPON_TYPES = ['Unarmed', 'One-Handed', 'Two-Handed', 'Shield', 'Ranged', 'Dual Wield', 'Polearm'];
 
 const STATUS_FIELDS = [
@@ -611,6 +651,20 @@ function triggerDownload(blob, filename) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+function showChangelog() {
+  let html = '<div class="changelog-overlay" onclick="if(event.target===this)this.remove()">';
+  html += '<div class="changelog-modal">';
+  html += '<div class="changelog-header">Changelog <span onclick="this.closest(\'.changelog-overlay\').remove()" style="float:right;cursor:pointer;font-size:1.2rem">&times;</span></div>';
+  for (const rel of CHANGELOG) {
+    html += '<div class="changelog-version">' + rel.ver + ' <span class="changelog-date">' + rel.date + '</span></div>';
+    html += '<ul class="changelog-list">';
+    for (const c of rel.changes) html += '<li>' + c + '</li>';
+    html += '</ul>';
+  }
+  html += '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
 }
 
 function downloadSave() {
