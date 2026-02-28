@@ -600,13 +600,13 @@ function tierColor(tier) { return TIER_COLORS[tier] || '#888'; }
 
 function itemTooltipHtml(id, item) {
   const f = itemFull(id);
-  if (!f) return `<div class="tt-name">${escHtml(itemName(id) || 'Unknown #' + id)}</div>`;
+  if (!f) return `<div class="tt-inner"><div class="tt-name">${escHtml(itemName(id) || 'Unknown #' + id)}</div></div>`;
 
   const tier = f.tier || 1;
   const tc = tierColor(tier);
   const sprite = spritePath(id);
 
-  let h = '';
+  let h = '<div class="tt-inner">';
   if (sprite) {
     h += `<div class="tt-sprite-wrap"><img class="tt-sprite" src="${sprite}" alt="" onerror="this.style.display='none'"></div>`;
   }
@@ -681,6 +681,7 @@ function itemTooltipHtml(id, item) {
     stats.forEach(([n, v]) => { h += `<div class="tt-row tt-dim"><span>${n}</span><span>${v}</span></div>`; });
   }
 
+  h += '</div>'; // close .tt-inner
   return h;
 }
 
@@ -1374,11 +1375,12 @@ function renderItemCard(id, item, idx, i) {
     : `<div class="icard-img icard-no-img"></div>`;
 
   const ttEvents = `onmouseenter="showItemTooltip(event,${id},${item ? 'saveData.npcs[' + idx + '].items[' + i + ']' : 'null'})" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()"`;
+  const legendaryClass = tier === 5 ? ' icard-legendary' : '';
 
   if (item) {
     // Owned item card
     return `
-      <div class="icard" style="border-color:${tc}" ${ttEvents} data-item-idx="${i}">
+      <div class="icard${legendaryClass}" style="border-color:${tc}" ${ttEvents} data-item-idx="${i}">
         ${qty > 1 ? `<span class="icard-qty">${qty}</span>` : ''}
         ${imgHtml}
         <div class="icard-name">${escHtml(name)}</div>
@@ -1394,7 +1396,7 @@ function renderItemCard(id, item, idx, i) {
   } else {
     // Catalog item card — draggable + clickable
     return `
-      <div class="icard icard-catalog" style="border-color:${tc}" ${ttEvents}
+      <div class="icard icard-catalog${legendaryClass}" style="border-color:${tc}" ${ttEvents}
         onclick="addItemDirect(${idx},${id})"
         draggable="true" ondragstart="onItemDragStart(event,${id},${idx})">
         ${imgHtml}
