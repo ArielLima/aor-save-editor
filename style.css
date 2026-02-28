@@ -1376,8 +1376,8 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .icard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
-  gap: 0.4rem;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.5rem;
   align-content: start;
 }
 
@@ -1386,7 +1386,7 @@ input[type="number"]::-webkit-inner-spin-button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.4rem 0.25rem 0.3rem;
+  padding: 0.6rem 0.4rem 0.5rem;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -1411,11 +1411,11 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .icard-img {
-  width: 48px;
-  height: 48px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
   image-rendering: pixelated;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.3rem;
   flex-shrink: 0;
 }
 
@@ -1426,12 +1426,12 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .icard-name {
   font-family: var(--font-display);
-  font-size: 0.58rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--text-secondary);
   text-align: center;
-  line-height: 1.2;
-  max-height: 2.4em;
+  line-height: 1.25;
+  max-height: 2.5em;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -1443,14 +1443,14 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .icard-qty {
   position: absolute;
-  top: 2px;
-  right: 3px;
+  top: 3px;
+  right: 4px;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--accent-gold-light);
   background: rgba(0,0,0,0.7);
-  padding: 0 0.3rem;
+  padding: 0.05rem 0.35rem;
   border-radius: 3px;
   line-height: 1.4;
   z-index: 1;
@@ -1467,20 +1467,20 @@ input[type="number"]::-webkit-inner-spin-button {
   display: flex;
   align-items: center;
   font-family: var(--font-mono);
-  font-size: 0.55rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
   background: rgba(0,0,0,0.3);
-  padding: 0.05rem 0.25rem;
+  padding: 0.1rem 0.35rem;
   border-radius: 2px;
   line-height: 1.4;
-  gap: 1px;
+  gap: 2px;
   cursor: default;
 }
 
 .icard-field {
   font-family: var(--font-mono);
-  font-size: 0.55rem;
-  width: 22px;
+  font-size: 0.65rem;
+  width: 26px;
   background: transparent;
   border: none;
   color: var(--text-secondary);
@@ -1506,10 +1506,10 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .icard-rm {
   position: absolute;
-  top: 2px;
-  left: 2px;
-  font-size: 0.7rem !important;
-  padding: 0 0.2rem !important;
+  top: 3px;
+  left: 3px;
+  font-size: 0.85rem !important;
+  padding: 0.05rem 0.3rem !important;
   line-height: 1;
 }
 
@@ -1643,7 +1643,7 @@ input[type="number"]::-webkit-inner-spin-button {
   .inv-layout { grid-template-columns: 1fr; }
   .inv-panel-owned { border-right: none; border-bottom: 1px solid var(--border); }
   .inv-panel { max-height: 400px; }
-  .icard-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+  .icard-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
 }
 
 /* === Build Presets === */
