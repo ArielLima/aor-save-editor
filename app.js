@@ -1173,6 +1173,22 @@ function applyBuildPreset(npcIdx, buildIndex) {
 
   const npc = saveData.npcs[npcIdx];
 
+  // 0. Ensure minimum level & stats for all skills across builds
+  const minLevel = 16;
+  const minStats = { strength: 9, agility: 11, intelligence: 9, willpower: 11, precision: 12, endurance: 8 };
+  if ((npc.level || 0) < minLevel) {
+    trackedOriginals['npc.' + npc.id + '.level'] = npc.level;
+    npc.level = minLevel;
+    changeCount++;
+  }
+  for (const [stat, min] of Object.entries(minStats)) {
+    if ((npc[stat] || 0) < min) {
+      trackedOriginals['npc.' + npc.id + '.' + stat] = npc[stat];
+      npc[stat] = min;
+      changeCount++;
+    }
+  }
+
   // 1. SkillSets — unlock ALL classes (combat + magic)
   trackedOriginals['npc.' + npc.id + '.skillSet'] = JSON.stringify(npc.skillSet || []);
   npc.skillSet = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,101,102,103,104,105,106,107,108,109,110,111];
