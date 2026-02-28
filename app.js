@@ -1637,7 +1637,7 @@ function unlockAllClasses(npcIdx) {
 function applyBuildPreset(npcIdx, buildIndex) {
   const preset = BUILD_PRESETS[buildIndex];
   if (!preset) return;
-  if (!confirm('Apply "' + preset.name + '" build?\n\nThis REPLACES all skillSets, talents, spells, and weapon mastery.\nPrevious build data will be overwritten.')) return;
+  if (!confirm('Apply "' + preset.name + '" build?\n\nThis REPLACES skillSets, talents, and spells.\nWeapon mastery will be added (existing mastery is kept).')) return;
 
   const npc = saveData.npcs[npcIdx];
 
@@ -1679,12 +1679,18 @@ function applyBuildPreset(npcIdx, buildIndex) {
   npc.spells = preset.spells.map(ps => ({ id: ps.id, lv: ps.lv || 3, cd: 0, isActivated: false }));
   changeCount++;
 
-  // 4. Weapon mastery — full replace
+  // 4. Weapon mastery — additive (keep existing, only raise)
   trackedOriginals['npc.' + npc.id + '.weaponMastery'] = JSON.stringify(npc.weaponMastery || []);
-  npc.weaponMastery = [...preset.weaponMastery];
-  npc.weaponMasteryEXP = preset.weaponMastery.map(v => v > 0 ? 999999 : 0);
+  if (!npc.weaponMastery) npc.weaponMastery = [0,0,0,0,0,0,0];
+  if (!npc.weaponMasteryEXP) npc.weaponMasteryEXP = [0,0,0,0,0,0,0];
   while (npc.weaponMastery.length < 7) npc.weaponMastery.push(0);
   while (npc.weaponMasteryEXP.length < 7) npc.weaponMasteryEXP.push(0);
+  for (let i = 0; i < preset.weaponMastery.length; i++) {
+    if (preset.weaponMastery[i] > npc.weaponMastery[i]) {
+      npc.weaponMastery[i] = preset.weaponMastery[i];
+      npc.weaponMasteryEXP[i] = 999999;
+    }
+  }
   changeCount++;
 
   // 5. Books (add to inventory if not owned)
@@ -1775,7 +1781,8 @@ function addItemDirect(npcIdx, itemId) {
   while (usedSlots.has(slot)) slot++;
   // Use full item data for default durability if available
   const f = itemFull(itemId);
-  const dur = f ? (f.stackable ? -1 : (f.durability || 100)) : 100;
+  const isFood = f && f.category === 'Foods';
+  const dur = f ? (isFood ? (f.durability || 100) : (f.stackable ? -1 : (f.durability || 100))) : 100;
   // Default quality: 5 for legendary items, 1 otherwise
   const assetName = f ? (f.name || '') : '';
   const spriteName = f ? (f.sprite || '') : '';
