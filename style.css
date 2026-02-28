@@ -1912,3 +1912,16 @@ input[type="number"]::-webkit-inner-spin-button {
   .editor-tab { flex: 1; text-align: center; padding: 0.5rem 0.5rem; font-size: 0.68rem; }
   .inv-item-fields { gap: 0.7rem; }
 }
+
+/* === VERSION TAG === */
+.version-tag {
+  position: fixed;
+  bottom: 6px;
+  right: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 9999;
+}
