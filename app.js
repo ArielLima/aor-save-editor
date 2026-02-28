@@ -1159,11 +1159,25 @@ function renderBuildsTab(npc, idx) {
   return `
     <div class="stat-card-wide">
       <div class="stat-card-title">Build Presets</div>
+      <div style="margin-bottom:12px;">
+        <button class="btn btn-gold" onclick="unlockAllClasses(${idx})">Unlock All Classes</button>
+        <span style="color:#aaa;margin-left:8px;font-size:0.85em;">Unlocks all 15 combat + 11 magic classes</span>
+      </div>
       <div class="builds-list">
         ${cards}
       </div>
     </div>
   `;
+}
+
+function unlockAllClasses(npcIdx) {
+  const npc = saveData.npcs[npcIdx];
+  const allSkillSets = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,101,102,103,104,105,106,107,108,109,110,111];
+  trackedOriginals['npc.' + npc.id + '.skillSet'] = JSON.stringify(npc.skillSet || []);
+  npc.skillSet = allSkillSets;
+  changeCount++;
+  updateChangesBar();
+  renderCharEditor();
 }
 
 function applyBuildPreset(npcIdx, buildIndex) {
