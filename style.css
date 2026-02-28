@@ -1581,6 +1581,28 @@ input[type="number"]::-webkit-inner-spin-button {
   border-color: rgba(42,36,24,0.5);
 }
 
+.icard-field {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(42,36,24,0.4);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  width: 2.5rem;
+  padding: 0 0.15rem;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.icard-field::-webkit-outer-spin-button,
+.icard-field::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.icard-field:focus {
+  border-bottom-color: var(--accent-gold);
+  background: rgba(0,0,0,0.3);
+}
+
 /* --- Remove button (top-left corner) --- */
 .icard-rm {
   position: absolute;

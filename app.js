@@ -1640,6 +1640,11 @@ function addItemDirect(npcIdx, itemId) {
   // Use full item data for default durability if available
   const f = itemFull(itemId);
   const dur = f ? (f.stackable ? -1 : (f.durability || 100)) : 100;
+  // Default quality: 5 for legendary items, 1 otherwise
+  const assetName = f ? (f.name || '') : '';
+  const spriteName = f ? (f.sprite || '') : '';
+  const isLegend = /legend/i.test(assetName) || /legend/i.test(spriteName) || /legend/i.test(itemName(itemId) || '');
+  const defaultQuality = isLegend ? 5 : 1;
   npc.items.push({
     id: itemId,
     slotIndex: slot,
@@ -1648,24 +1653,51 @@ function addItemDirect(npcIdx, itemId) {
     isNew: true,
     isStolen: 0,
     durability: dur,
-    quality: 1,
+    quality: defaultQuality,
     addAttrs: []
   });
   changeCount++;
   trackedOriginals[`npc.${npc.id}.items.add.${itemId}.${Date.now()}`] = null;
   updateChangesBar();
-  // Preserve search query and category, then re-render
+  refreshInventoryPanel(npcIdx);
+}
+
+function refreshInventoryPanel(npcIdx) {
+  const npc = saveData.npcs[npcIdx];
+  // Save scroll positions
+  const ownedWrap = document.querySelector('.inv-panel-owned .icard-grid-wrap');
+  const catalogWrap = document.querySelector('.inv-panel-catalog .icard-grid-wrap');
+  const ownedScroll = ownedWrap ? ownedWrap.scrollTop : 0;
+  const catalogScroll = catalogWrap ? catalogWrap.scrollTop : 0;
+  // Save search query and category
   const searchInput = document.getElementById('inv-catalog-search-' + npcIdx);
   const query = searchInput ? searchInput.value : '';
   const savedCat = activeCatalogCategory;
-  renderCharEditor();
-  // Restore search & category state
+  // Re-render just the inventory card
+  const container = document.getElementById('char-editor');
+  const invLayout = container ? container.querySelector('.inv-layout') : null;
+  if (invLayout) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = renderInventoryCard(npc, npcIdx);
+    const newLayout = tmp.firstElementChild;
+    invLayout.replaceWith(newLayout);
+  } else {
+    renderCharEditor();
+  }
+  // Restore category and search
   activeCatalogCategory = savedCat;
   const newInput = document.getElementById('inv-catalog-search-' + npcIdx);
   if (newInput && query) {
     newInput.value = query;
   }
   filterItemCatalog(npcIdx);
+  // Restore scroll positions
+  requestAnimationFrame(() => {
+    const newOwnedWrap = document.querySelector('.inv-panel-owned .icard-grid-wrap');
+    const newCatalogWrap = document.querySelector('.inv-panel-catalog .icard-grid-wrap');
+    if (newOwnedWrap) newOwnedWrap.scrollTop = ownedScroll;
+    if (newCatalogWrap) newCatalogWrap.scrollTop = catalogScroll;
+  });
 }
 
 // Drag and drop from catalog to inventory
@@ -2052,7 +2084,11 @@ function removeListItem(npcIdx, arrKey, itemIdx) {
   const removedId = typeof removed === 'object' ? removed.id : removed;
   trackedOriginals[`npc.${npc.id}.${arrKey}.remove.${removedId}.${Date.now()}`] = removed;
   updateChangesBar();
-  renderCharEditor();
+  if (arrKey === 'items') {
+    refreshInventoryPanel(npcIdx);
+  } else {
+    renderCharEditor();
+  }
 }
 
 function markInput(input, oldVal, newVal) {
