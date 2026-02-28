@@ -502,6 +502,69 @@ const BUILD_PRESETS = [
     weaponMastery: [0, 0, 50, 0, 0, 0, 0],
     books: [],
   },
+
+  // =========================================================================
+  // BUILD 7: DUAL WIELD BLENDER — Fastest possible auto-attacks
+  // Dual daggers (0.80 speed each) + every on-hit passive + attack speed buff.
+  // Pre-toggle stances, give AI zero or minimal spells. Pure auto-attack.
+  // Dual wield = 2 weapons = double on-hit proc rate.
+  // =========================================================================
+  {
+    name: 'Dual Wield Blender',
+    description: 'Fastest auto-attacks in the game. Dual daggers (0.80 speed) with every on-hit passive stacked. Pre-toggle ConcentrativeMode before combat. AI has only 1-2 AoE spells so it mostly auto-attacks. Double on-hit procs: armor shred, damage amp, slow, bleed, lifesteal all trigger twice as fast as greatsword.',
+    skillSets: [1, 2, 4, 5, 7, 9, 11],
+    talents: [
+      // Fighter — always-on +15% damage
+      { id: 18, lv: 5 },   // Fighter mastery — +15% DmgIncrease
+      { id: 19, lv: 3 },   // Kill_Desire — +30% AtkSpeed when hit
+      { id: 21, lv: 3 },   // Multi_Weapon_Master — +90 stamina, +100 force
+      { id: 43, lv: 3 },   // Distance_Attack — +3.5 attack range
+      // Commander — on-hit debuff + ally synergy
+      { id: 8, lv: 5 },    // Commander mastery — aura buff
+      { id: 9, lv: 3 },    // Harasser — on-hit +20 damage amp (100% chance, PROCS BOTH WEAPONS)
+      { id: 10, lv: 3 },   // Power_In_Numbers — +4 dmg per nearby ally
+      { id: 11, lv: 3 },   // Revenge_Fire — +24 counter damage
+      // Duelist — attack speed + armor shred
+      { id: 40, lv: 5 },   // Duelist mastery — +15 flat weapon damage
+      { id: 42, lv: 3 },   // QuickStrafe — +45 attack speed
+      { id: 41, lv: 3 },   // ExposeWeakness — on-hit stacking armor pen (PROCS BOTH WEAPONS)
+      { id: 0, lv: 3 },    // Counter_Cut — +25% counter chance
+      // Rogue — flat melee + burst
+      { id: 56, lv: 5 },   // Rogue mastery — +25 crit damage
+      { id: 53, lv: 3 },   // Cunning — +16 flat MeleeDmg (ALWAYS ON)
+      { id: 57, lv: 3 },   // SurpriseAttack — 25% chance 150% dmg hit
+      { id: 55, lv: 3 },   // LowProfile — minor armor
+      // Berserker — attack speed on rage + bleed
+      { id: 104, lv: 5 },  // Berserker mastery — +20%/lv attack speed on rage
+      { id: 106, lv: 3 },  // Hamstring — on-hit slow (PROCS BOTH WEAPONS)
+      { id: 108, lv: 3 },  // Torturer — +11 bleed per hit (PROCS BOTH WEAPONS)
+      { id: 107, lv: 3 },  // LethalChaser — +40 chase speed
+      // Battlemonk — extra hit + bonus damage
+      { id: 146, lv: 5 },  // Battlemonk mastery — attack speed scales with INT
+      { id: 147, lv: 3 },  // InternalForce — +18 bonus damage to attacks
+      { id: 149, lv: 3 },  // QuickKick — extra kick on every auto (3RD WEAPON)
+      { id: 150, lv: 3 },  // Resilience — +40% healing received
+      // Shapeshifter — lifesteal + armor pen
+      { id: 198, lv: 5 },  // Shapeshifter mastery
+      { id: 178, lv: 3 },  // Bloodthirsty — 30% lifesteal
+      { id: 180, lv: 3 },  // SharpClaws — +12% weapon dmg, +12 slash pen
+      { id: 181, lv: 3 },  // ThickFur — +30 natural armor
+      // Dual Wield weapon tree — all passives
+      { id: 17, lv: 3 },   // Two_Swords_One_Brain — +15 dual wield coordination
+      { id: 16, lv: 3 },   // Quick_Withdraw — +35 off-hand attack speed
+      { id: 13, lv: 3 },   // Coherent_Slash — +8 combo hit bonus
+      { id: 14, lv: 3 },   // GettingHandy — +9 dual wield damage
+    ],
+    spells: [
+      // Pre-toggle stance (you activate before combat)
+      { id: 56 },   // ConcentrativeMode — TOGGLE, +35 flat weapon dmg permanent
+      // Minimal AI spells — mostly auto-attacks
+      { id: 73 },   // EnvenomedWeapon — venom DoT on hit, 15s/25s
+      { id: 168 },  // ChiHeal — emergency heal, 30s CD
+    ],
+    weaponMastery: [0, 0, 0, 0, 0, 50, 0],
+    books: [],
+  },
 ];
 // =====================================================================
 // FILE HANDLING
