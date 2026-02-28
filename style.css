@@ -1477,15 +1477,9 @@ input[type="number"]::-webkit-inner-spin-button {
   position: absolute;
   top: 2px;
   left: 2px;
-  opacity: 0;
-  transition: opacity 0.15s ease;
   font-size: 0.7rem !important;
   padding: 0 0.2rem !important;
   line-height: 1;
-}
-
-.icard:hover .icard-rm {
-  opacity: 1;
 }
 
 /* --- Category Filter Pills --- */
