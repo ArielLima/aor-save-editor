@@ -1392,10 +1392,11 @@ function renderItemCard(id, item, idx, i) {
       </div>
     `;
   } else {
-    // Catalog item card
+    // Catalog item card — draggable + clickable
     return `
       <div class="icard icard-catalog" style="border-color:${tc}" ${ttEvents}
-        onclick="addItemDirect(${idx},${id})">
+        onclick="addItemDirect(${idx},${id})"
+        draggable="true" ondragstart="onItemDragStart(event,${id},${idx})">
         ${imgHtml}
         <div class="icard-name">${escHtml(name)}</div>
       </div>
@@ -1420,7 +1421,8 @@ function renderInventoryCard(npc, idx) {
 
   return `
     <div class="inv-layout stat-card-wide">
-      <div class="inv-panel inv-panel-owned">
+      <div class="inv-panel inv-panel-owned"
+        ondragover="onInvDragOver(event)" ondragleave="onInvDragLeave(event)" ondrop="onInvDrop(event)">
         <div class="stat-card-title">
           Inventory
           <span class="card-count">${items.length}</span>
@@ -1662,6 +1664,39 @@ function addItemDirect(npcIdx, itemId) {
     newInput.value = query;
   }
   filterItemCatalog(npcIdx);
+}
+
+// Drag and drop from catalog to inventory
+let dragItemId = null;
+let dragNpcIdx = null;
+
+function onItemDragStart(e, itemId, npcIdx) {
+  dragItemId = itemId;
+  dragNpcIdx = npcIdx;
+  e.dataTransfer.effectAllowed = 'copy';
+  e.dataTransfer.setData('text/plain', String(itemId));
+  // Hide tooltip during drag
+  hideItemTooltip();
+}
+
+function onInvDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'copy';
+  e.currentTarget.classList.add('inv-drop-hover');
+}
+
+function onInvDragLeave(e) {
+  e.currentTarget.classList.remove('inv-drop-hover');
+}
+
+function onInvDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('inv-drop-hover');
+  if (dragItemId !== null && dragNpcIdx !== null) {
+    addItemDirect(dragNpcIdx, dragItemId);
+  }
+  dragItemId = null;
+  dragNpcIdx = null;
 }
 
 function renderAlignmentCard(npc, idx) {
