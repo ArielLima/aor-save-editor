@@ -1077,8 +1077,8 @@ input[type="number"]::-webkit-inner-spin-button {
 .inv-panel {
   display: flex;
   flex-direction: column;
-  min-height: 300px;
-  max-height: 600px;
+  min-height: 350px;
+  max-height: 700px;
 }
 
 .inv-panel-owned {
@@ -1364,6 +1364,234 @@ input[type="number"]::-webkit-inner-spin-button {
 .changes-actions { display: flex; gap: 0.5rem; }
 
 /* ================================================================== */
+/*  VISUAL ITEM CARDS                                                  */
+/* ================================================================== */
+
+/* --- Item Card Grid --- */
+.icard-grid-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.icard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+  gap: 0.4rem;
+  align-content: start;
+}
+
+.icard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.4rem 0.25rem 0.3rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: default;
+  transition: all 0.15s ease;
+  border-top-width: 2px;
+}
+
+.icard:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.icard-catalog {
+  cursor: pointer;
+}
+
+.icard-catalog:hover {
+  border-color: var(--accent-gold-dim);
+}
+
+.icard-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  margin-bottom: 0.2rem;
+  flex-shrink: 0;
+}
+
+.icard-no-img {
+  background: rgba(42,36,24,0.3);
+  border-radius: 3px;
+}
+
+.icard-name {
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.2;
+  max-height: 2.4em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  width: 100%;
+  letter-spacing: 0.01em;
+}
+
+.icard-qty {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--accent-gold-light);
+  background: rgba(0,0,0,0.7);
+  padding: 0 0.3rem;
+  border-radius: 3px;
+  line-height: 1.4;
+  z-index: 1;
+}
+
+/* --- Owned card action row --- */
+.icard-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 0.2rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  height: 0;
+  overflow: hidden;
+}
+
+.icard:hover .icard-actions {
+  opacity: 1;
+  height: auto;
+}
+
+.icard-field {
+  width: 32px !important;
+  font-size: 0.65rem !important;
+  padding: 0.15rem 0.2rem !important;
+  text-align: center !important;
+}
+
+.icard-rm {
+  font-size: 0.75rem !important;
+  padding: 0 0.25rem !important;
+}
+
+/* --- Category Filter Pills --- */
+.icat-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.4rem;
+}
+
+.icat-pill {
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icat-pill:hover {
+  color: var(--text-secondary);
+  border-color: var(--border-light);
+  background: var(--bg-card-hover);
+}
+
+.icat-pill.icat-active {
+  color: #1a1408;
+  background: var(--accent-gold-dim);
+  border-color: var(--accent-gold);
+}
+
+/* --- Hover Tooltip --- */
+.item-tooltip {
+  position: fixed;
+  z-index: 9000;
+  background: var(--bg-card);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  padding: 0.7rem 0.9rem;
+  min-width: 200px;
+  max-width: 320px;
+  pointer-events: none;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 16px rgba(201,168,76,0.08);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.tt-name {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.15rem;
+}
+
+.tt-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.02em;
+}
+
+.tt-section {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--accent-gold-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.4rem;
+  margin-bottom: 0.15rem;
+}
+
+.tt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.05rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.tt-row span:last-child {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.tt-enchant span:last-child {
+  color: var(--accent-gold-light);
+}
+
+.tt-dim span {
+  color: var(--text-muted) !important;
+  font-weight: 400 !important;
+}
+
+.tt-divider {
+  border-top: 1px solid var(--border);
+  margin: 0.3rem 0;
+}
+
+/* ================================================================== */
 /*  RESPONSIVE                                                         */
 /* ================================================================== */
 @media (max-width: 860px) {
@@ -1371,6 +1599,7 @@ input[type="number"]::-webkit-inner-spin-button {
   .inv-layout { grid-template-columns: 1fr; }
   .inv-panel-owned { border-right: none; border-bottom: 1px solid var(--border); }
   .inv-panel { max-height: 400px; }
+  .icard-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
 }
 
 /* === Build Presets === */

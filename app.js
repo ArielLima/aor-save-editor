@@ -10,8 +10,10 @@ let activeEditorTab = 'overview';
 
 // Data dictionaries (loaded from KKAoRMod data files)
 let ITEM_DB = {};
+let ITEMS_FULL = {};
 let TRAIT_DB = {};
 let ADDON_ATTR_DB = {};
+let activeCatalogCategory = 'All';
 
 // =====================================================================
 // CONSTANTS
@@ -577,6 +579,146 @@ function clampInt32(v) {
 function itemName(id) {
   const entry = ITEM_DB[String(id)];
   return entry ? entry.en : null;
+}
+
+function itemFull(id) { return ITEMS_FULL[String(id)] || null; }
+
+function spritePath(id) {
+  const f = itemFull(id);
+  return f && f.sprite ? 'data/sprites/' + f.sprite : null;
+}
+
+const TIER_COLORS = { 1: '#888', 2: '#4a8', 3: '#48a', 4: '#a4e', 5: '#c9a84c' };
+const TIER_NAMES = { 1: 'Common', 2: 'Uncommon', 3: 'Rare', 4: 'Epic', 5: 'Legendary' };
+const ARMOUR_TYPES = { 0: 'None', 1: 'Light', 2: 'Medium', 3: 'Heavy' };
+const EQUIP_TYPES = { 1: 'Weapon', 2: 'Off-Hand', 3: 'Head', 4: 'Chest', 5: 'Gloves', 6: 'Cape', 7: 'Legs', 8: 'Belt', 9: 'Amulet', 10: 'Ring' };
+const WEAPON_TYPE_NAMES = { 1: 'One-Hand', 2: 'Two-Hand', 3: 'Polearm', 4: 'Ranged', 5: 'Shield', 6: 'Dual', 7: 'Unarmed' };
+const DAMAGE_TYPE_NAMES = { 0: 'Phys', 1: 'Slash', 2: 'Pierce', 3: 'Blunt', 4: 'Fire', 5: 'Cold', 6: 'Lightning', 7: 'Poison', 8: 'Magic' };
+const ITEM_CATEGORIES = ['All', 'Weapons', 'Wearing', 'Ornaments', 'Foods', 'Potions', 'Books', 'Materials', 'Readable', 'Craftrecipes', 'Other'];
+
+function tierColor(tier) { return TIER_COLORS[tier] || '#888'; }
+
+function itemTooltipHtml(id, item) {
+  const f = itemFull(id);
+  if (!f) return `<div class="tt-name">${escHtml(itemName(id) || 'Unknown #' + id)}</div>`;
+
+  const tier = f.tier || 1;
+  const tc = tierColor(tier);
+  let h = `<div class="tt-name" style="color:${tc}">${escHtml(f.name || itemName(id) || 'Unknown')}</div>`;
+  h += `<div class="tt-sub">${TIER_NAMES[tier] || 'T' + tier} &middot; ${f.category || '?'}`;
+  if (f.EquipType) h += ` &middot; ${EQUIP_TYPES[f.EquipType] || 'Equip'}`;
+  if (f.armourType) h += ` &middot; ${ARMOUR_TYPES[f.armourType] || ''} Armor`;
+  h += `</div>`;
+
+  // Weapon damage
+  if (f.damage && f.damage.damage) {
+    h += '<div class="tt-section">Damage</div>';
+    f.damage.damage.forEach(d => {
+      h += `<div class="tt-row"><span>${DAMAGE_TYPE_NAMES[d.damageType] || 'Dmg'}</span><span>${d.minDamage}-${d.maxDamage}</span></div>`;
+    });
+    if (f.AttackSpeed) h += `<div class="tt-row"><span>Speed</span><span>${f.AttackSpeed.toFixed(2)}</span></div>`;
+    if (f.AttackRange) h += `<div class="tt-row"><span>Range</span><span>${f.AttackRange.toFixed(1)}</span></div>`;
+    if (f.Force) h += `<div class="tt-row"><span>Force</span><span>${f.Force}</span></div>`;
+    if (f.strFactor) h += `<div class="tt-row"><span>STR Factor</span><span>${f.strFactor}</span></div>`;
+    if (f.agiFactor) h += `<div class="tt-row"><span>AGI Factor</span><span>${f.agiFactor}</span></div>`;
+  }
+
+  // Armor DR
+  if (f.damageDR && f.damageDR.some(v => v > 0)) {
+    h += '<div class="tt-section">Damage Resistance</div>';
+    const drNames = ['Slash', 'Pierce', 'Blunt', 'Fire', 'Cold', 'Light', 'Poison', 'Magic', 'Holy'];
+    f.damageDR.forEach((v, i) => {
+      if (v > 0) h += `<div class="tt-row"><span>${drNames[i] || 'DR' + i}</span><span>${v}</span></div>`;
+    });
+  }
+
+  // Consumable restores
+  if (f.consumableType !== undefined) {
+    const restores = [
+      ['Hunger', f.hungryRestore], ['Vigor', f.vigorRestore],
+      ['Health', f.healthRestore], ['Morale', f.moraleRestore], ['Alcohol', f.alcohol]
+    ].filter(([, v]) => v);
+    if (restores.length) {
+      h += '<div class="tt-section">Restores</div>';
+      restores.forEach(([n, v]) => { h += `<div class="tt-row"><span>${n}</span><span>${v > 0 ? '+' : ''}${v}</span></div>`; });
+    }
+  }
+
+  // addAttrs from items-full (base item bonuses)
+  if (f.addAttrs && f.addAttrs.length > 0) {
+    h += '<div class="tt-section">Bonuses</div>';
+    f.addAttrs.forEach(a => {
+      const label = addonAttrName(a.type) || 'Attr #' + a.type;
+      h += `<div class="tt-row"><span>${escHtml(label)}</span><span>+${a.value}</span></div>`;
+    });
+  }
+
+  // Save-file enchantments (if item passed from inventory)
+  if (item && item.addAttrs && item.addAttrs.length > 0) {
+    h += '<div class="tt-section">Enchantments</div>';
+    item.addAttrs.forEach(a => {
+      const attrType = a.type !== undefined ? a.type : a.id;
+      const label = addonAttrName(attrType) || 'Attr #' + attrType;
+      h += `<div class="tt-row tt-enchant"><span>${escHtml(label)}</span><span>+${a.value}</span></div>`;
+    });
+  }
+
+  // Common stats
+  const stats = [
+    ['Weight', f.weight], ['Value', f.value], ['Durability', f.durability],
+    ['Req. Level', f.RequiredLevel]
+  ].filter(([, v]) => v);
+  if (stats.length) {
+    h += '<div class="tt-divider"></div>';
+    stats.forEach(([n, v]) => { h += `<div class="tt-row tt-dim"><span>${n}</span><span>${v}</span></div>`; });
+  }
+
+  return h;
+}
+
+// Global tooltip element
+let tooltipEl = null;
+function ensureTooltip() {
+  if (!tooltipEl) {
+    tooltipEl = document.createElement('div');
+    tooltipEl.className = 'item-tooltip';
+    tooltipEl.style.display = 'none';
+    document.body.appendChild(tooltipEl);
+  }
+  return tooltipEl;
+}
+
+function showItemTooltip(e, id, item) {
+  const tt = ensureTooltip();
+  tt.innerHTML = itemTooltipHtml(id, item);
+  tt.style.display = 'block';
+  positionTooltip(e, tt);
+}
+
+function moveItemTooltip(e) {
+  const tt = ensureTooltip();
+  if (tt.style.display !== 'none') positionTooltip(e, tt);
+}
+
+function hideItemTooltip() {
+  const tt = ensureTooltip();
+  tt.style.display = 'none';
+}
+
+function positionTooltip(e, tt) {
+  const pad = 12;
+  let x = e.clientX + pad;
+  let y = e.clientY + pad;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const tw = Math.min(tt.offsetWidth || 280, 320);
+  const th = tt.offsetHeight || 200;
+  if (x + tw > vw - pad) x = e.clientX - tw - pad;
+  if (y + th > vh - pad) y = e.clientY - th - pad;
+  if (x < pad) x = pad;
+  if (y < pad) y = pad;
+  tt.style.left = x + 'px';
+  tt.style.top = y + 'px';
 }
 
 function traitName(id) {
@@ -1212,59 +1354,60 @@ function addTraitDirect(npcIdx, traitId) {
   }
 }
 
+function renderItemCard(id, item, idx, i) {
+  const name = itemName(id) || 'Unknown';
+  const f = itemFull(id);
+  const tier = f ? (f.tier || 1) : 1;
+  const tc = tierColor(tier);
+  const sprite = spritePath(id);
+  const qty = item ? item.stackNum : 0;
+  const imgHtml = sprite
+    ? `<img class="icard-img" src="${sprite}" alt="" loading="lazy" onerror="this.style.display='none'">`
+    : `<div class="icard-img icard-no-img"></div>`;
+
+  const ttEvents = `onmouseenter="showItemTooltip(event,${id},${item ? 'saveData.npcs[' + idx + '].items[' + i + ']' : 'null'})" onmousemove="moveItemTooltip(event)" onmouseleave="hideItemTooltip()"`;
+
+  if (item) {
+    // Owned item card
+    return `
+      <div class="icard" style="border-color:${tc}" ${ttEvents} data-item-idx="${i}">
+        ${qty > 1 ? `<span class="icard-qty">${qty}</span>` : ''}
+        ${imgHtml}
+        <div class="icard-name">${escHtml(name)}</div>
+        <div class="icard-actions">
+          <input class="stat-input icard-field" type="number" value="${qty}" title="Qty" style="width:36px;"
+            onchange="onItemField(${idx},${i},'stackNum',Number(this.value));event.stopPropagation()">
+          <input class="stat-input icard-field" type="number" value="${item.quality}" title="Quality" style="width:36px;"
+            onchange="onItemField(${idx},${i},'quality',Number(this.value));event.stopPropagation()">
+          <button class="btn-remove icard-rm" onclick="removeListItem(${idx},'items',${i})" title="Remove">&times;</button>
+        </div>
+      </div>
+    `;
+  } else {
+    // Catalog item card
+    return `
+      <div class="icard icard-catalog" style="border-color:${tc}" ${ttEvents}
+        onclick="addItemDirect(${idx},${id})">
+        ${imgHtml}
+        <div class="icard-name">${escHtml(name)}</div>
+      </div>
+    `;
+  }
+}
+
 function renderInventoryCard(npc, idx) {
   const items = npc.items || [];
 
-  // Left panel: character's current inventory
-  let itemList = '';
+  let itemCards = '';
   items.forEach((item, i) => {
-    const name = itemName(item.id);
-    const dur = item.durability === -1 ? 'Consumable' : Number(item.durability).toFixed(1);
-    const durLabel = item.durability === -1 ? 'Consumable' : 'Durability';
+    itemCards += renderItemCard(item.id, item, idx, i);
+  });
 
-    let addAttrHtml = '';
-    if (item.addAttrs && item.addAttrs.length > 0) {
-      const attrChips = item.addAttrs.map(a => {
-        const attrType = a.type !== undefined ? a.type : a.id;
-        const attrLabel = addonAttrName(attrType) || ('Attr #' + attrType);
-        return `<span class="item-attr-chip" title="Type: ${attrType}">${escHtml(attrLabel)}: ${a.value}</span>`;
-      }).join('');
-      addAttrHtml = `<div class="item-attrs">${attrChips}</div>`;
-    }
-
-    itemList += `
-      <div class="inv-item">
-        <div class="inv-item-header">
-          <div class="inv-item-name">
-            ${name
-              ? `<span class="item-name">${escHtml(name)}</span>`
-              : `<span class="item-name item-name-unknown">Unknown Item</span>`}
-            <span class="item-id">#${item.id}</span>
-          </div>
-          <button class="btn-remove" onclick="removeListItem(${idx}, 'items', ${i})" title="Remove">&times;</button>
-        </div>
-        <div class="inv-item-fields">
-          <label class="inv-field">
-            <span class="inv-field-label">Qty</span>
-            <input class="stat-input" type="number" value="${item.stackNum}" style="width:50px;"
-              onchange="onItemField(${idx}, ${i}, 'stackNum', Number(this.value))">
-          </label>
-          <label class="inv-field">
-            <span class="inv-field-label">Quality</span>
-            <input class="stat-input" type="number" value="${item.quality}" style="width:50px;"
-              onchange="onItemField(${idx}, ${i}, 'quality', Number(this.value))">
-          </label>
-          <label class="inv-field">
-            <span class="inv-field-label">${durLabel}</span>
-            ${item.durability === -1
-              ? `<span class="inv-field-value">Consumable</span>`
-              : `<input class="stat-input" type="number" value="${Number(item.durability).toFixed(1)}" style="width:70px;" step="0.1"
-                  onchange="onItemField(${idx}, ${i}, 'durability', Number(this.value))">`}
-          </label>
-        </div>
-        ${addAttrHtml}
-      </div>
-    `;
+  // Category filter pills
+  let pills = '';
+  ITEM_CATEGORIES.forEach(cat => {
+    const active = activeCatalogCategory === cat ? ' icat-active' : '';
+    pills += `<button class="icat-pill${active}" onclick="setCatalogCategory('${cat}',${idx})">${cat}</button>`;
   });
 
   return `
@@ -1274,17 +1417,20 @@ function renderInventoryCard(npc, idx) {
           Inventory
           <span class="card-count">${items.length}</span>
         </div>
-        <div class="inv-list">
-          ${itemList || '<div class="inv-empty">No items</div>'}
+        <div class="icard-grid-wrap">
+          ${itemCards ? `<div class="icard-grid">${itemCards}</div>` : '<div class="inv-empty">No items</div>'}
         </div>
       </div>
       <div class="inv-panel inv-panel-catalog">
         <div class="stat-card-title">Item Catalog</div>
         <div class="inv-catalog-search">
-          <input class="stat-input search-input" type="text" placeholder="Search items by name..." id="inv-catalog-search-${idx}"
+          <div class="icat-bar">${pills}</div>
+          <input class="stat-input search-input" type="text" placeholder="Search items..." id="inv-catalog-search-${idx}"
             oninput="filterItemCatalog(${idx})" autocomplete="off">
         </div>
-        <div class="inv-catalog-list" id="inv-catalog-list-${idx}"></div>
+        <div class="icard-grid-wrap">
+          <div class="icard-grid" id="inv-catalog-list-${idx}"></div>
+        </div>
       </div>
     </div>
   `;
@@ -1418,28 +1564,51 @@ function applyBuildPreset(npcIdx, buildIndex) {
   renderCharEditor();
 }
 
+function setCatalogCategory(cat, npcIdx) {
+  activeCatalogCategory = cat;
+  // Update pill active state
+  document.querySelectorAll('.icat-pill').forEach(el => {
+    el.classList.toggle('icat-active', el.textContent === cat);
+  });
+  filterItemCatalog(npcIdx);
+}
+
+function matchesCategory(f, cat) {
+  if (cat === 'All') return true;
+  if (cat === 'Other') {
+    return !['Weapons', 'Wearing', 'Ornaments', 'Foods', 'Potions', 'Books', 'Materials', 'Readable', 'Craftrecipes'].includes(f.category);
+  }
+  return f.category === cat;
+}
+
 function filterItemCatalog(npcIdx) {
   const input = document.getElementById('inv-catalog-search-' + npcIdx);
   const list = document.getElementById('inv-catalog-list-' + npcIdx);
   if (!list) return;
   const query = input ? input.value.toLowerCase().trim() : '';
-  // Build candidates and fuzzy filter
+
+  // Build candidates from ITEMS_FULL (prefer) or ITEM_DB
   const candidates = [];
+  const src = Object.keys(ITEMS_FULL).length > 0 ? ITEMS_FULL : null;
   for (const [id, entry] of Object.entries(ITEM_DB)) {
+    const f = src ? src[id] : null;
+    // Category filter
+    if (f && activeCatalogCategory !== 'All' && !matchesCategory(f, activeCatalogCategory)) continue;
     candidates.push({ key: id, text: entry.en, id: Number(id), name: entry.en });
   }
+
   const results = query ? fuzzyFilter(candidates, query) : candidates;
   if (results.length === 0) {
     list.innerHTML = '<div class="inv-empty">No items match "' + escHtml(query) + '"</div>';
     return;
   }
-  list.innerHTML = results.map(r =>
-    `<div class="catalog-item" onclick="addItemDirect(${npcIdx}, ${r.id})">
-      <span class="catalog-item-name">${escHtml(r.name)}</span>
-      <span class="catalog-item-id">#${r.id}</span>
-      <button class="btn btn-sm catalog-add-btn">+ Add</button>
-    </div>`
-  ).join('');
+
+  // Cap at 200 for performance
+  const capped = results.slice(0, 200);
+  list.innerHTML = capped.map(r => renderItemCard(r.id, null, npcIdx, null)).join('');
+  if (results.length > 200) {
+    list.innerHTML += `<div class="inv-empty" style="padding:0.5rem">${results.length - 200} more items — refine search</div>`;
+  }
 }
 
 function addItemDirect(npcIdx, itemId) {
@@ -1448,6 +1617,9 @@ function addItemDirect(npcIdx, itemId) {
   const usedSlots = new Set(npc.items.map(i => i.slotIndex));
   let slot = 0;
   while (usedSlots.has(slot)) slot++;
+  // Use full item data for default durability if available
+  const f = itemFull(itemId);
+  const dur = f ? (f.stackable ? -1 : (f.durability || 100)) : 100;
   npc.items.push({
     id: itemId,
     slotIndex: slot,
@@ -1455,23 +1627,25 @@ function addItemDirect(npcIdx, itemId) {
     stackNum: 1,
     isNew: true,
     isStolen: 0,
-    durability: 100,
+    durability: dur,
     quality: 1,
     addAttrs: []
   });
   changeCount++;
   trackedOriginals[`npc.${npc.id}.items.add.${itemId}.${Date.now()}`] = null;
   updateChangesBar();
-  // Preserve search query and re-render
+  // Preserve search query and category, then re-render
   const searchInput = document.getElementById('inv-catalog-search-' + npcIdx);
   const query = searchInput ? searchInput.value : '';
+  const savedCat = activeCatalogCategory;
   renderCharEditor();
-  // Restore search state
+  // Restore search & category state
+  activeCatalogCategory = savedCat;
   const newInput = document.getElementById('inv-catalog-search-' + npcIdx);
   if (newInput && query) {
     newInput.value = query;
-    filterItemCatalog(npcIdx);
   }
+  filterItemCatalog(npcIdx);
 }
 
 function renderAlignmentCard(npc, idx) {
@@ -1863,6 +2037,7 @@ function acceptDisclaimer() {
 (function init() {
   // Load data dictionaries (non-blocking)
   fetch('data/items.json').then(r => r.json()).then(d => { ITEM_DB = d; }).catch(() => {});
+  fetch('data/items-full.json').then(r => r.json()).then(d => { ITEMS_FULL = d; }).catch(() => {});
   fetch('data/traits.json').then(r => r.json()).then(d => { TRAIT_DB = d; }).catch(() => {});
   fetch('data/addon_attributes.json').then(r => r.json()).then(d => { ADDON_ATTR_DB = d; }).catch(() => {});
 
