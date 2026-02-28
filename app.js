@@ -436,6 +436,72 @@ const BUILD_PRESETS = [
     weaponMastery: [50, 0, 0, 0, 0, 0, 0],
     books: [],
   },
+
+  // =========================================================================
+  // BUILD 6: AUTO-ATTACK BERSERKER — Pure passive auto-attack build
+  // 7 combat classes stacked for maximum on-hit effects and attack speed.
+  // No active damage skills needed — just walk up and swing.
+  // Toggles only: ConcentrativeMode + BloodThirstyWeapon for permanent buffs.
+  // =========================================================================
+  {
+    name: 'Auto-Attack Berserker',
+    description: 'Pure passive auto-attack build. 7 combat classes stacked for on-hit effects: +45 attack speed (QuickStrafe), +16 flat melee (Cunning), 30% lifesteal (Bloodthirsty), +18 bonus dmg (InternalForce), extra kick hit (QuickKick), on-hit armor shred (ExposeWeakness), on-hit damage amp (Harasser). ConcentrativeMode toggle +35 flat wpn dmg. Just walk up and swing.',
+    skillSets: [1, 2, 4, 5, 7, 9, 11],
+    talents: [
+      // Fighter — always-on +15% damage
+      { id: 18, lv: 5 },   // Fighter mastery — +15% DmgIncrease
+      { id: 19, lv: 3 },   // Kill_Desire — +30% AtkSpeed when hit
+      { id: 21, lv: 3 },   // Multi_Weapon_Master — +90 stamina, +100 force
+      { id: 43, lv: 3 },   // Distance_Attack — +3.5 attack range
+      // Commander — on-hit debuff + ally synergy
+      { id: 8, lv: 5 },    // Commander mastery — aura buff
+      { id: 9, lv: 3 },    // Harasser — on-hit +20 damage amp debuff (100% chance)
+      { id: 10, lv: 3 },   // Power_In_Numbers — +4 dmg per nearby ally
+      { id: 11, lv: 3 },   // Revenge_Fire — +24 counter damage
+      // Duelist — attack speed + armor shred
+      { id: 40, lv: 5 },   // Duelist mastery — +15 flat weapon damage
+      { id: 42, lv: 3 },   // QuickStrafe — +45 attack speed
+      { id: 41, lv: 3 },   // ExposeWeakness — on-hit stacking armor pen
+      { id: 0, lv: 3 },    // Counter_Cut — +25% counter chance
+      // Rogue — flat melee + burst
+      { id: 56, lv: 5 },   // Rogue mastery — +25 crit damage
+      { id: 53, lv: 3 },   // Cunning — +16 flat MeleeDmg (ALWAYS ON)
+      { id: 57, lv: 3 },   // SurpriseAttack — 25% chance 150% dmg hit
+      { id: 55, lv: 3 },   // LowProfile — minor armor
+      // Berserker — attack speed on rage + bleed
+      { id: 104, lv: 5 },  // Berserker mastery — +20%/lv attack speed on rage
+      { id: 106, lv: 3 },  // Hamstring — on-hit slow
+      { id: 108, lv: 3 },  // Torturer — +11 bleed per hit
+      { id: 107, lv: 3 },  // LethalChaser — +40 chase speed
+      // Battlemonk — extra hit + bonus damage
+      { id: 146, lv: 5 },  // Battlemonk mastery — +1.0 phys/magic DR scaling
+      { id: 147, lv: 3 },  // InternalForce — +18 bonus damage to attacks
+      { id: 149, lv: 3 },  // QuickKick — extra kick on every auto
+      { id: 150, lv: 3 },  // Resilience — +40% healing received
+      // Shapeshifter — lifesteal + armor pen
+      { id: 198, lv: 5 },  // Shapeshifter mastery
+      { id: 178, lv: 3 },  // Bloodthirsty — 30% lifesteal
+      { id: 180, lv: 3 },  // SharpClaws — +12% weapon dmg, +12 slash pen
+      { id: 181, lv: 3 },  // ThickFur — +30 natural armor
+      // Greatsword (Mace) weapon tree — all passives
+      { id: 68, lv: 3 },   // Overwhelming — +32% CritDmg
+      { id: 3, lv: 3 },    // Wild_Sweep — +25% LifeSteal (stacks with Bloodthirsty)
+      { id: 1, lv: 3 },    // Reaper's_Cleave — cleave on autos
+      { id: 2, lv: 3 },    // LethalStrike — +16% SpellDmg
+    ],
+    spells: [
+      // Toggles only — no active rotation needed
+      { id: 56 },   // ConcentrativeMode — TOGGLE, +35 flat weapon dmg permanent
+      { id: 313 },  // BloodThirstyWeapon — life leech enchant, 20s/10s (100% uptime)
+      { id: 73 },   // EnvenomedWeapon — venom DoT on hit, 15s/25s
+      // Minimal utility for AI
+      { id: 4 },    // SpiralSlash — 124% AoE, 8s CD (for groups)
+      { id: 1 },    // ChargeAttack — 150% gap closer, 13s CD
+      { id: 168 },  // ChiHeal — AoE heal, 30s CD
+    ],
+    weaponMastery: [0, 0, 50, 0, 0, 0, 0],
+    books: [],
+  },
 ];
 // =====================================================================
 // FILE HANDLING
