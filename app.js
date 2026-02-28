@@ -75,6 +75,75 @@ const EDITOR_TABS = [
   { id: 'builds',     label: 'Builds' },
 ];
 
+// =====================================================================
+// FUZZY SEARCH
+// =====================================================================
+/**
+ * Fuzzy-match `query` against `text` (case-insensitive).
+ * Characters in query must appear in text in order, but not adjacent.
+ * Returns { match: true, score } or { match: false }.
+ * Lower score = better match.  Exact substring = score 0 (best).
+ */
+function fuzzyMatch(query, text) {
+  const lq = query.toLowerCase();
+  const lt = text.toLowerCase();
+
+  // Exact substring match is best
+  if (lt.includes(lq)) return { match: true, score: 0 };
+
+  // Fuzzy: every query char must appear in order in text
+  let ti = 0;
+  let score = 0;
+  let prevMatchIdx = -1;
+  for (let qi = 0; qi < lq.length; qi++) {
+    const ch = lq[qi];
+    if (ch === ' ') continue; // skip spaces in query for flexibility
+    let found = false;
+    while (ti < lt.length) {
+      if (lt[ti] === ch) {
+        // Reward consecutive chars / word-boundary matches
+        const gap = prevMatchIdx === -1 ? 0 : (ti - prevMatchIdx - 1);
+        score += gap; // penalise gaps between matched chars
+        // Bonus: if match is at start of a word, reduce penalty
+        if (ti === 0 || lt[ti - 1] === ' ' || lt[ti - 1] === '_' || lt[ti - 1] === '-') {
+          score = Math.max(0, score - gap); // undo gap penalty for word starts
+        }
+        prevMatchIdx = ti;
+        ti++;
+        found = true;
+        break;
+      }
+      ti++;
+    }
+    if (!found) return { match: false };
+  }
+
+  // Add a small base penalty so fuzzy matches always rank below exact substring
+  return { match: true, score: score + 1 };
+}
+
+/**
+ * Filter + sort an array of { key, text, ... } objects by fuzzy match quality.
+ * Returns the subset that matches, sorted best-first.
+ */
+function fuzzyFilter(items, query) {
+  if (!query) return items;
+  const scored = [];
+  for (const item of items) {
+    // Also allow exact ID match
+    if (item.key === query) {
+      scored.push({ item, score: -1 }); // ID match = absolute best
+      continue;
+    }
+    const result = fuzzyMatch(query, item.text);
+    if (result.match) {
+      scored.push({ item, score: result.score });
+    }
+  }
+  scored.sort((a, b) => a.score - b.score);
+  return scored.map(s => s.item);
+}
+
 const BUILD_PRESETS = [
   // =========================================================================
   // BUILD 1: GREATSWORD MASTER — Fighter + Duelist + Two-Hand maxed
@@ -533,19 +602,18 @@ function filterSearch(inputId, dropdownId, db) {
     dropdown.classList.remove('visible');
     return;
   }
-  const results = [];
+  // Build candidate list for fuzzy filtering
+  const candidates = [];
   for (const [id, entry] of Object.entries(db)) {
-    if (entry.en.toLowerCase().includes(query) || id === query) {
-      results.push({ id: Number(id), name: entry.en });
-    }
-    if (results.length >= 12) break;
+    candidates.push({ key: id, text: entry.en, id: Number(id), name: entry.en });
   }
-  if (results.length === 0) {
+  const matched = fuzzyFilter(candidates, query).slice(0, 12);
+  if (matched.length === 0) {
     dropdown.innerHTML = '<div class="search-no-results">No matches</div>';
     dropdown.classList.add('visible');
     return;
   }
-  dropdown.innerHTML = results.map(r =>
+  dropdown.innerHTML = matched.map(r =>
     `<div class="search-result" onmousedown="selectSearchResult('${inputId}', ${r.id})">${escHtml(r.name)} <span class="search-result-id">#${r.id}</span></div>`
   ).join('');
   dropdown.classList.add('visible');
@@ -640,10 +708,8 @@ function renderNpcList() {
   let filtered = saveData.npcs.filter(n => !partyIds.has(n.id));
 
   if (query) {
-    filtered = filtered.filter(n =>
-      n.unitname.toLowerCase().includes(query) ||
-      String(n.id).includes(query)
-    );
+    const candidates = filtered.map(n => ({ key: String(n.id), text: n.unitname, npc: n }));
+    filtered = fuzzyFilter(candidates, query).map(c => c.npc);
   }
 
   const shown = filtered.slice(0, 100);
@@ -1108,12 +1174,12 @@ function filterTraitCatalog(npcIdx) {
   const query = input ? input.value.toLowerCase().trim() : '';
   const npc = findNpc(selectedCharId);
   const ownedSet = new Set((npc && npc.traits) ? npc.traits : []);
-  const results = [];
+  // Build candidates and fuzzy filter
+  const candidates = [];
   for (const [id, entry] of Object.entries(TRAIT_DB)) {
-    if (!query || entry.en.toLowerCase().includes(query) || id === query) {
-      results.push({ id: Number(id), name: entry.en, owned: ownedSet.has(Number(id)) });
-    }
+    candidates.push({ key: id, text: entry.en, id: Number(id), name: entry.en, owned: ownedSet.has(Number(id)) });
   }
+  const results = query ? fuzzyFilter(candidates, query) : candidates;
   if (results.length === 0) {
     list.innerHTML = '<div class="inv-empty">No traits match "' + escHtml(query) + '"</div>';
     return;
@@ -1357,12 +1423,12 @@ function filterItemCatalog(npcIdx) {
   const list = document.getElementById('inv-catalog-list-' + npcIdx);
   if (!list) return;
   const query = input ? input.value.toLowerCase().trim() : '';
-  const results = [];
+  // Build candidates and fuzzy filter
+  const candidates = [];
   for (const [id, entry] of Object.entries(ITEM_DB)) {
-    if (!query || entry.en.toLowerCase().includes(query) || id === query) {
-      results.push({ id: Number(id), name: entry.en });
-    }
+    candidates.push({ key: id, text: entry.en, id: Number(id), name: entry.en });
   }
+  const results = query ? fuzzyFilter(candidates, query) : candidates;
   if (results.length === 0) {
     list.innerHTML = '<div class="inv-empty">No items match "' + escHtml(query) + '"</div>';
     return;
