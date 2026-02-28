@@ -1363,6 +1363,12 @@ input[type="number"]::-webkit-inner-spin-button {
   z-index: 100;
   box-shadow: 0 -6px 24px rgba(0,0,0,0.5);
   transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.changes-bar.visible {
+  transform: translateY(0);
+}
 
 /* ================================================================== */
 /*  VISUAL ITEM CARDS -- Polished Inventory                            */
