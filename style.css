@@ -1392,8 +1392,8 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .icard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
-  gap: 0.45rem;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.5rem;
   align-content: start;
 }
 
@@ -1484,8 +1484,8 @@ input[type="number"]::-webkit-inner-spin-button {
 
 /* --- Sprite image --- */
 .icard-img {
-  width: 48px;
-  height: 48px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
   image-rendering: pixelated;
   margin-bottom: 0.25rem;
@@ -1509,7 +1509,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .icard-name {
   font-family: var(--font-display);
-  font-size: 0.58rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-secondary);
   text-align: center;
@@ -1536,7 +1536,7 @@ input[type="number"]::-webkit-inner-spin-button {
   top: 3px;
   right: 4px;
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--accent-gold-light);
   background: rgba(0,0,0,0.75);
@@ -1560,7 +1560,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .icard-stat {
   font-family: var(--font-mono);
-  font-size: 0.55rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   background: rgba(0,0,0,0.35);
   padding: 0.08rem 0.3rem;
@@ -1580,9 +1580,9 @@ input[type="number"]::-webkit-inner-spin-button {
   position: absolute;
   top: 2px;
   left: 2px;
-  opacity: 0;
-  transition: opacity 0.18s ease, color 0.15s ease, transform 0.15s ease;
-  font-size: 0.7rem !important;
+  opacity: 1;
+  transition: color 0.15s ease, transform 0.15s ease;
+  font-size: 0.85rem !important;
   padding: 0 0.2rem !important;
   line-height: 1;
   z-index: 4;
@@ -1590,6 +1590,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .icard:hover .icard-rm {
   opacity: 1;
+  color: var(--danger-light);
 }
 
 .icard-rm:hover {
@@ -1835,7 +1836,7 @@ input[type="number"]::-webkit-inner-spin-button {
   .inv-layout { grid-template-columns: 1fr; }
   .inv-panel-owned { border-right: none; border-bottom: 1px solid var(--border); }
   .inv-panel { max-height: 400px; }
-  .icard-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+  .icard-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
 }
 
 /* === Build Presets === */
