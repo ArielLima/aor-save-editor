@@ -1937,13 +1937,10 @@ input[type="number"]::-webkit-inner-spin-button {
 
 /* === VERSION TAG === */
 .version-tag {
-  position: fixed;
-  bottom: 6px;
-  right: 10px;
   font-family: var(--font-mono);
   font-size: 0.6rem;
   color: var(--text-muted);
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: 9999;
+  opacity: 0.6;
+  float: right;
+  margin-left: 1rem;
 }
