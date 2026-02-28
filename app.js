@@ -594,7 +594,7 @@ const ARMOUR_TYPES = { 0: 'None', 1: 'Light', 2: 'Medium', 3: 'Heavy' };
 const EQUIP_TYPES = { 1: 'Weapon', 2: 'Off-Hand', 3: 'Head', 4: 'Chest', 5: 'Gloves', 6: 'Cape', 7: 'Legs', 8: 'Belt', 9: 'Amulet', 10: 'Ring' };
 const WEAPON_TYPE_NAMES = { 1: 'One-Hand', 2: 'Two-Hand', 3: 'Polearm', 4: 'Ranged', 5: 'Shield', 6: 'Dual', 7: 'Unarmed' };
 const DAMAGE_TYPE_NAMES = { 0: 'Phys', 1: 'Slash', 2: 'Pierce', 3: 'Blunt', 4: 'Fire', 5: 'Cold', 6: 'Lightning', 7: 'Poison', 8: 'Magic' };
-const ITEM_CATEGORIES = ['All', 'Weapons', 'Wearing', 'Ornaments', 'Foods', 'Potions', 'Books', 'Materials', 'Readable', 'Craftrecipes', 'Other'];
+const ITEM_CATEGORIES = ['All', 'Weapons', 'Light Armor', 'Medium Armor', 'Heavy Armor', 'Clothes', 'Ornaments', 'Foods', 'Potions', 'Books', 'Materials', 'Readable', 'Recipes', 'Other'];
 
 function tierColor(tier) { return TIER_COLORS[tier] || '#888'; }
 
@@ -1575,6 +1575,11 @@ function setCatalogCategory(cat, npcIdx) {
 
 function matchesCategory(f, cat) {
   if (cat === 'All') return true;
+  if (cat === 'Light Armor') return f.category === 'Wearing' && f.armourType === 1;
+  if (cat === 'Medium Armor') return f.category === 'Wearing' && f.armourType === 2;
+  if (cat === 'Heavy Armor') return f.category === 'Wearing' && f.armourType === 3;
+  if (cat === 'Clothes') return f.category === 'Wearing' && (!f.armourType || f.armourType === 0);
+  if (cat === 'Recipes') return f.category === 'Craftrecipes';
   if (cat === 'Other') {
     return !['Weapons', 'Wearing', 'Ornaments', 'Foods', 'Potions', 'Books', 'Materials', 'Readable', 'Craftrecipes'].includes(f.category);
   }
@@ -1594,7 +1599,10 @@ function filterItemCatalog(npcIdx) {
     const f = src ? src[id] : null;
     // Category filter
     if (f && activeCatalogCategory !== 'All' && !matchesCategory(f, activeCatalogCategory)) continue;
-    candidates.push({ key: id, text: entry.en, id: Number(id), name: entry.en });
+    // Search text includes display name + asset name for broader matching
+    const assetName = f ? (f.name || '') : '';
+    const searchText = entry.en + (assetName !== entry.en ? ' ' + assetName.replace(/_/g, ' ') : '');
+    candidates.push({ key: id, text: searchText, id: Number(id), name: entry.en });
   }
 
   const results = query ? fuzzyFilter(candidates, query) : candidates;
