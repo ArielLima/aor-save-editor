@@ -311,6 +311,60 @@ const BUILD_PRESETS = [
     weaponMastery: [0, 0, 50, 0, 0, 0, 0],
     books: [],
   },
+
+  // =========================================================================
+  // BUILD 6: UNARMED — Fighter + Battlemonk + LingShe Palm + full Unarmed tree
+  // All three class passives maxed. Tiger Pose + all unarmed actives.
+  // LingShe Palm snake skills for poison/debuff. Battlemonk for chi heal/shield.
+  // =========================================================================
+  {
+    name: 'Unarmed',
+    description: 'Fighter (+15% dmg) + Battlemonk (chi heal, energy shield) + LingShe Palm (snake strikes, poison). Full Unarmed weapon tree with TigerPose. All passives maxed across all 3 classes + unarmed tree.',
+    skillSets: [1, 9, 15],
+    talents: [
+      // Fighter — all passives
+      { id: 18, lv: 5 },   // Fighter mastery — +15% DmgIncrease
+      { id: 19, lv: 3 },   // Kill_Desire
+      { id: 20, lv: 3 },   // Medium_Armour_Expert
+      { id: 21, lv: 3 },   // Multi_Weapon_Master
+      { id: 43, lv: 3 },   // Distance_Attack
+      // Battlemonk — all passives
+      { id: 146, lv: 5 },  // Battlemonk mastery
+      { id: 147, lv: 3 },  // InternalForce
+      { id: 148, lv: 3 },  // Mortify
+      { id: 149, lv: 3 },  // QuickKick
+      { id: 150, lv: 3 },  // Resilience
+      // LingShe Palm — all passives
+      { id: 359, lv: 5 },  // LingshePalm mastery
+      { id: 357, lv: 3 },  // SerpentDiscipline
+      { id: 358, lv: 3 },  // SnakeGaze
+      // Unarmed weapon tree — all passives
+      { id: 151, lv: 3 },  // DeflectiveParry
+      { id: 152, lv: 3 },  // Martial_Arts_Master
+      { id: 153, lv: 3 },  // TripleAttack
+    ],
+    spells: [
+      // Unarmed weapon actives
+      { id: 181 },  // TigerPose — stance
+      { id: 183 },  // Uppercut
+      { id: 182 },  // TornadoPunch
+      { id: 175 },  // AxeKick
+      { id: 177 },  // InjuringPalm
+      { id: 178 },  // LegSweep
+      // LingShe Palm skills
+      { id: 445 },  // PathOfSnake — toggle
+      { id: 446 },  // SneakStrike
+      { id: 450 },  // SnakeFangs
+      { id: 451 },  // VenomousFlicker
+      { id: 452 },  // BoneCorrosionPalm
+      // Battlemonk skills
+      { id: 168 },  // ChiHeal
+      { id: 171 },  // EnergyShield
+      { id: 170 },  // EnergyBurst
+    ],
+    weaponMastery: [50, 0, 0, 0, 0, 0, 0],
+    books: [],
+  },
 ];
 // =====================================================================
 // FILE HANDLING
