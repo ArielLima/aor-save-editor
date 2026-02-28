@@ -1464,13 +1464,44 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .icard-stat {
+  display: flex;
+  align-items: center;
   font-family: var(--font-mono);
   font-size: 0.55rem;
   color: var(--text-muted);
   background: rgba(0,0,0,0.3);
-  padding: 0.05rem 0.3rem;
+  padding: 0.05rem 0.25rem;
   border-radius: 2px;
   line-height: 1.4;
+  gap: 1px;
+  cursor: default;
+}
+
+.icard-field {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  width: 22px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.icard-field:focus {
+  outline: none;
+  color: var(--accent-gold-light);
+  background: rgba(201,168,76,0.1);
+  border-radius: 2px;
+}
+
+.icard-field::-webkit-outer-spin-button,
+.icard-field::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
 }
 
 .icard-rm {

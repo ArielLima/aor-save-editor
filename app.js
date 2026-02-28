@@ -1383,8 +1383,10 @@ function renderItemCard(id, item, idx, i) {
         ${imgHtml}
         <div class="icard-name">${escHtml(name)}</div>
         <div class="icard-meta">
-          <span class="icard-stat" title="Quantity">x${qty}</span>
-          <span class="icard-stat" title="Quality">Q${item.quality}</span>
+          <label class="icard-stat" title="Quantity">x<input class="icard-field" type="number" value="${qty}"
+            onchange="onItemField(${idx},${i},'stackNum',Number(this.value))" onclick="event.stopPropagation()"></label>
+          <label class="icard-stat" title="Quality">Q<input class="icard-field" type="number" value="${item.quality}"
+            onchange="onItemField(${idx},${i},'quality',Number(this.value))" onclick="event.stopPropagation()"></label>
         </div>
         <button class="btn-remove icard-rm" onclick="removeListItem(${idx},'items',${i})" title="Remove">&times;</button>
       </div>
