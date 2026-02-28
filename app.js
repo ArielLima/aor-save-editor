@@ -1229,7 +1229,7 @@ function applyBuildPreset(npcIdx, buildIndex) {
 
   // 0. Ensure minimum level & stats for all skills across builds
   const minLevel = 15;
-  const minStats = { strength: 12, agility: 12, intelligence: 12, willpower: 12, precision: 12, endurance: 12 };
+  const minStats = { strength: 30, agility: 12, intelligence: 12, willpower: 12, precision: 12, endurance: 15 };
   if ((npc.level || 0) < minLevel) {
     trackedOriginals['npc.' + npc.id + '.level'] = npc.level;
     npc.level = minLevel;
