@@ -77,7 +77,47 @@ const EDITOR_TABS = [
 
 const BUILD_PRESETS = [
   // =========================================================================
-  // BUILD 1: ETERNAL BULWARK — Pure Tank (3 combat classes, no magic)
+  // BUILD 1: GREATSWORD MASTER — Fighter + Duelist + Two-Hand maxed
+  // User-tested. All passives from Fighter, Duelist, and Mace weapon tree.
+  // 6 damage skills, every button hits hard. ConcentrativeMode +35 flat wpn.
+  // =========================================================================
+  {
+    name: 'Greatsword Master',
+    description: 'The proven build. Fighter (+15% dmg always-on) + Duelist (ConcentrativeMode +35 flat wpn dmg) + full Two-Hand tree. 6 pure damage skills: TrioSlash, SpiralSlash, ChargeAttack, PowerStrike, WhirlwindAttack, PrecisionStrike. Every button hits hard.',
+    skillSets: [1, 4],
+    talents: [
+      // Fighter — all passives
+      { id: 18, lv: 5 },   // Fighter mastery — +15% DmgIncrease
+      { id: 19, lv: 3 },   // Kill_Desire — +30% AtkSpeed when hit
+      { id: 20, lv: 3 },   // Medium_Armour_Expert
+      { id: 21, lv: 3 },   // Multi_Weapon_Master — +90 stamina, +100 force
+      { id: 43, lv: 3 },   // Distance_Attack — +3.5 range
+      // Duelist — all passives
+      { id: 40, lv: 5 },   // Duelist mastery — +15 flat weapon damage
+      { id: 0, lv: 3 },    // Counter_Cut — +25 counter damage
+      { id: 41, lv: 3 },   // ExposeWeakness — stacking armor pen
+      { id: 42, lv: 3 },   // QuickStrafe — +45 attack speed
+      // Greatsword (Mace) — all passives
+      { id: 68, lv: 3 },   // Overwhelming — +32% CritDmg
+      { id: 3, lv: 3 },    // Wild_Sweep — +25% LifeSteal
+      { id: 1, lv: 3 },    // Reaper's_Cleave — +16% DmgIncrease proc
+      { id: 2, lv: 3 },    // LethalStrike — +16% SpellDmg
+    ],
+    spells: [
+      { id: 56 },   // ConcentrativeMode — TOGGLE, +35 flat weapon dmg
+      { id: 5 },    // TrioSlash — 90% wide AoE, 18s CD
+      { id: 4 },    // SpiralSlash — 124% AoE, 8s CD
+      { id: 1 },    // ChargeAttack — 150% gap closer, 13s CD
+      { id: 40 },   // PowerStrike — 200% nuke, 15s CD
+      { id: 23 },   // WhirlwindAttack — 100% AoE spin, 30s CD
+      { id: 59 },   // PrecisionStrike — 160% single target, 18s CD
+    ],
+    weaponMastery: [0, 0, 50, 0, 0, 0, 0],
+    books: [],
+  },
+
+  // =========================================================================
+  // BUILD 2: ETERNAL BULWARK — Pure Tank (3 combat classes, no magic)
   // Defender + Berserker + Battlemonk. 2 defensive toggles, 2 death saves.
   // =========================================================================
   {
@@ -1188,7 +1228,7 @@ function applyBuildPreset(npcIdx, buildIndex) {
   const npc = saveData.npcs[npcIdx];
 
   // 0. Ensure minimum level & stats for all skills across builds
-  const minLevel = 16;
+  const minLevel = 15;
   const minStats = { strength: 9, agility: 11, intelligence: 9, willpower: 11, precision: 12, endurance: 8 };
   if ((npc.level || 0) < minLevel) {
     trackedOriginals['npc.' + npc.id + '.level'] = npc.level;
