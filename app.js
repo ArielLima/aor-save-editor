@@ -1382,13 +1382,11 @@ function renderItemCard(id, item, idx, i) {
         ${qty > 1 ? `<span class="icard-qty">${qty}</span>` : ''}
         ${imgHtml}
         <div class="icard-name">${escHtml(name)}</div>
-        <div class="icard-actions">
-          <input class="stat-input icard-field" type="number" value="${qty}" title="Qty" style="width:36px;"
-            onchange="onItemField(${idx},${i},'stackNum',Number(this.value));event.stopPropagation()">
-          <input class="stat-input icard-field" type="number" value="${item.quality}" title="Quality" style="width:36px;"
-            onchange="onItemField(${idx},${i},'quality',Number(this.value));event.stopPropagation()">
-          <button class="btn-remove icard-rm" onclick="removeListItem(${idx},'items',${i})" title="Remove">&times;</button>
+        <div class="icard-meta">
+          <span class="icard-stat" title="Quantity">x${qty}</span>
+          <span class="icard-stat" title="Quality">Q${item.quality}</span>
         </div>
+        <button class="btn-remove icard-rm" onclick="removeListItem(${idx},'items',${i})" title="Remove">&times;</button>
       </div>
     `;
   } else {
